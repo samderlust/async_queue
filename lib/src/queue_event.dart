@@ -7,6 +7,5 @@ class QueueEvent {
   });
 
   @override
-  String toString() =>
-      'QueueEvent(currentQueueSize: $currentQueueSize, time: $time)';
+  String toString() => 'QueueEvent(Queue Size: $currentQueueSize, time: $time)';
 }

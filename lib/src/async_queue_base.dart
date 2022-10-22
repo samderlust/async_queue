@@ -9,13 +9,18 @@ class AsyncQueue {
   int _size = 0;
   bool _autoRun = false;
   bool _isRunning = false;
-  QueueListener? _listener;
+  QueueListener? _beforeListener;
+  QueueListener? _afterListener;
 
   AsyncQueue();
 
   factory AsyncQueue.autoStart() => AsyncQueue().._autoRun = true;
 
-  void addQueueListener(QueueListener listener) => _listener = listener;
+  void addQueueBeforeListener(QueueListener listener) =>
+      _beforeListener = listener;
+
+  void addQueueAfterListener(QueueListener listener) =>
+      _afterListener = listener;
 
   int get size => _size;
 
@@ -54,7 +59,9 @@ class AsyncQueue {
 
     var currentNode = _first;
 
-    if (_listener != null) _listener!(QueueEvent(currentQueueSize: _size));
+    if (_beforeListener != null) {
+      _beforeListener!(QueueEvent(currentQueueSize: _size));
+    }
 
     await _first!.job();
 
@@ -66,5 +73,9 @@ class AsyncQueue {
       currentNode?.next = null;
     }
     _size--;
+
+    if (_afterListener != null) {
+      _afterListener!(QueueEvent(currentQueueSize: _size));
+    }
   }
 }

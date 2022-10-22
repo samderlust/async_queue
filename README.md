@@ -1,39 +1,92 @@
-<!-- 
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/samderlust)
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages). 
+# Async Queue - ensure list of async task perform in order
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages). 
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+This dart package ensure your pack of async task perform in order, one after the other.
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+- (Normal Queue) Add multiple jobs into queue before firing
+- (Auto Queue) Firing job as soon as any job is added to the queue
+- (Both) Option to add queue listener that happens before or after execute every job
 
-## Getting started
+## Installing and import the library:
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+Like any other package, add the library to your pubspec.yaml dependencies:
+
+```
+dependencies:
+    async_queue: <latest_version>
+```
+
+Then import it wherever you want to use it:
+
+```
+import 'package:async_queue/async_queue.dart';
+```
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
+### 1. Normal Queue
 
-```dart
-const like = 'sample';
+```
+ final asyncQ = AsyncQueue();
+  asyncQ.addJob(() =>
+      Future.delayed(const Duration(seconds: 1), () => print("normalQ: 1")));
+  asyncQ.addJob(() =>
+      Future.delayed(const Duration(seconds: 4), () => print("normalQ: 2")));
+  asyncQ.addJob(() =>
+      Future.delayed(const Duration(seconds: 2), () => print("normalQ: 3")));
+  asyncQ.addJob(() =>
+      Future.delayed(const Duration(seconds: 1), () => print("normalQ: 4")));
+
+  await asyncQ.start();
+
+    // normalQ: 1
+    // normalQ: 2
+    // normalQ: 3
+    // normalQ: 4
 ```
 
-## Additional information
+### 2. Auto Star Queue
 
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+```
+final autoAsyncQ = AsyncQueue.autoStart();
+
+  autoAsyncQ.addJob(() =>
+      Future.delayed(const Duration(seconds: 1), () => print("AutoQ: 1")));
+  await Future.delayed(const Duration(seconds: 6));
+  autoAsyncQ.addJob(() =>
+      Future.delayed(const Duration(seconds: 0), () => print("AutoQ: 1.2")));
+  autoAsyncQ.addJob(() =>
+      Future.delayed(const Duration(seconds: 0), () => print("AutoQ: 1.3")));
+  autoAsyncQ.addJob(() =>
+      Future.delayed(const Duration(seconds: 4), () => print("AutoQ: 2")));
+  autoAsyncQ.addJob(() =>
+      Future.delayed(const Duration(seconds: 3), () => print("AutoQ: 2.2")));
+  autoAsyncQ.addJob(() =>
+      Future.delayed(const Duration(seconds: 2), () => print("AutoQ: 3")));
+  autoAsyncQ.addJob(() =>
+      Future.delayed(const Duration(seconds: 1), () => print("AutoQ: 4")));
+
+    // AutoQ: 1
+    // AutoQ: 1.2
+    // AutoQ: 1.3
+    // AutoQ: 2
+    // AutoQ: 2.2
+    // AutoQ: 3
+    // AutoQ: 4
+```
+
+### Add Queue Listener
+
+```
+  final asyncQ = AsyncQueue();
+
+  asyncQ.addQueueBeforeListener((event) => print("before $event"));
+  asyncQ.addQueueAfterListener((event) => print("after $event"));
+```
+
+## Appreciate Your Feedbacks and Contributes
+
+If you find anything need to be improve or want to request a feature. Please go ahead and create an issue in the [Github](https://github.com/samderlust/async_queue) repo

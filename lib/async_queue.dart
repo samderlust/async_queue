@@ -1,6 +1,5 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
+/// This dart package ensure your pack of async task perform in order, one after the other.
+
 library async_queue;
 
 export 'src/async_queue_base.dart';
