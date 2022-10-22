@@ -18,15 +18,13 @@ Future<void> normalQ() async {
   asyncQ.addJob(() =>
       Future.delayed(const Duration(seconds: 2), () => print("normalQ: 3")));
   asyncQ.addJob(() =>
-      Future.delayed(const Duration(seconds: 1), () => print("normalQ: 4")));
+      Future.delayed(const Duration(seconds: 4), () => print("normalQ: 4")));
 
-  await asyncQ.start();
+  asyncQ.start();
 }
 
 Future<void> autoQ() async {
   final autoAsyncQ = AsyncQueue.autoStart();
-
-  // autoAsyncQ.addQueueListener((event) => print(event));
 
   autoAsyncQ.addJob(() =>
       Future.delayed(const Duration(seconds: 1), () => print("AutoQ: 1")));
