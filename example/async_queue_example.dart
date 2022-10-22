@@ -8,8 +8,7 @@ void main() async {
 Future<void> normalQ() async {
   final asyncQ = AsyncQueue();
 
-  asyncQ.addQueueBeforeListener((event) => print("before $event"));
-  asyncQ.addQueueAfterListener((event) => print("after $event"));
+  asyncQ.addQueueListener((event) => print(event));
 
   asyncQ.addJob(() =>
       Future.delayed(const Duration(seconds: 1), () => print("normalQ: 1")));
@@ -20,7 +19,7 @@ Future<void> normalQ() async {
   asyncQ.addJob(() =>
       Future.delayed(const Duration(seconds: 4), () => print("normalQ: 4")));
 
-  asyncQ.start();
+  await asyncQ.start();
 }
 
 Future<void> autoQ() async {

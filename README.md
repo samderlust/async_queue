@@ -1,14 +1,14 @@
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/samderlust)
 
-# Async Queue - ensure list of async task perform in order
+# Async Queue - ensure list of async task execute in order
 
-This dart package ensure your pack of async task perform in order, one after the other.
+This dart package ensure your pack of async task execute in order, one after the other.
 
 ## Features
 
 - (Normal Queue) Add multiple jobs into queue before firing
 - (Auto Queue) Firing job as soon as any job is added to the queue
-- (Both) Option to add queue listener that happens before or after execute every job
+- (Both) Option to add queue listener that emits events that happen in the queue
 
 ## Installing and import the library:
 

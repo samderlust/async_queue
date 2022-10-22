@@ -93,6 +93,17 @@ first come first serve</p>
 
 </dd>
 
+        <dt id="isClosed" class="property">
+  <span class="name"><a href="../async_queue/AsyncQueue/isClosed.html">isClosed</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> 
+
+</dt>
+<dd>
+  true if the queue is closed, no more job can be added
+  <div class="features">read-only</div>
+
+</dd>
+
         <dt id="runtimeType" class="property inherited">
   <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/runtimeType.html">runtimeType</a></span>
   <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/Type-class.html">Type</a></span> 
@@ -137,28 +148,41 @@ first come first serve</p>
 
 </dd>
 
-        <dt id="addQueueAfterListener" class="callable">
-  <span class="name"><a href="../async_queue/AsyncQueue/addQueueAfterListener.html">addQueueAfterListener</a></span><span class="signature">(<wbr><span class="parameter" id="addQueueAfterListener-param-listener"><span class="type-annotation">QueueListener</span> <span class="parameter-name">listener</span></span>)
+        <dt id="addJobThrow" class="callable">
+  <span class="name"><a href="../async_queue/AsyncQueue/addJobThrow.html">addJobThrow</a></span><span class="signature">(<wbr><span class="parameter" id="addJobThrow-param-job"><span class="type-annotation">AsyncJob</span> <span class="parameter-name">job</span></span>)
     <span class="returntype parameter">&#8594; void</span>
   </span>
   
 
 </dt>
 <dd>
-  Add After Listener
+  Add new job in to the queue
   
 
 </dd>
 
-        <dt id="addQueueBeforeListener" class="callable">
-  <span class="name"><a href="../async_queue/AsyncQueue/addQueueBeforeListener.html">addQueueBeforeListener</a></span><span class="signature">(<wbr><span class="parameter" id="addQueueBeforeListener-param-listener"><span class="type-annotation">QueueListener</span> <span class="parameter-name">listener</span></span>)
+        <dt id="addQueueListener" class="callable">
+  <span class="name"><a href="../async_queue/AsyncQueue/addQueueListener.html">addQueueListener</a></span><span class="signature">(<wbr><span class="parameter" id="addQueueListener-param-listener"><span class="type-annotation">QueueListener</span> <span class="parameter-name">listener</span></span>)
     <span class="returntype parameter">&#8594; void</span>
   </span>
   
 
 </dt>
 <dd>
-  Add Before Listener
+  Queue listener, emit event that indicate state of the queue
+  
+
+</dd>
+
+        <dt id="close" class="callable">
+  <span class="name"><a href="../async_queue/AsyncQueue/close.html">close</a></span><span class="signature">(<wbr><span class="parameter" id="close-param-forceStop">{<span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">forceStop</span> = <span class="default-value">false</span>}</span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  close the queue so that no more job can be added
   
 
 </dd>
@@ -274,13 +298,15 @@ first come first serve</p>
       <a href="../async_queue/AsyncQueue-class.html#instance-properties">Properties</a>
     </li>
     <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/hashCode.html">hashCode</a></li>
+    <li><a href="../async_queue/AsyncQueue/isClosed.html">isClosed</a></li>
     <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/runtimeType.html">runtimeType</a></li>
     <li><a href="../async_queue/AsyncQueue/size.html">size</a></li>
 
     <li class="section-title"><a href="../async_queue/AsyncQueue-class.html#instance-methods">Methods</a></li>
     <li><a href="../async_queue/AsyncQueue/addJob.html">addJob</a></li>
-    <li><a href="../async_queue/AsyncQueue/addQueueAfterListener.html">addQueueAfterListener</a></li>
-    <li><a href="../async_queue/AsyncQueue/addQueueBeforeListener.html">addQueueBeforeListener</a></li>
+    <li><a href="../async_queue/AsyncQueue/addJobThrow.html">addJobThrow</a></li>
+    <li><a href="../async_queue/AsyncQueue/addQueueListener.html">addQueueListener</a></li>
+    <li><a href="../async_queue/AsyncQueue/close.html">close</a></li>
     <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></li>
     <li><a href="../async_queue/AsyncQueue/start.html">start</a></li>
     <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/toString.html">toString</a></li>
@@ -300,7 +326,7 @@ first come first serve</p>
 <footer>
   <span class="no-break">
     async_queue
-      1.0.0
+      1.1.0
   </span>
 
   

@@ -1,3 +1,5 @@
+import 'package:async_queue/src/exceptions.dart';
+
 import 'async_job.dart';
 import 'queue_event.dart';
 import 'typedef.dart';
@@ -12,8 +14,9 @@ class AsyncQueue {
   int _size = 0;
   bool _autoRun = false;
   bool _isRunning = false;
-  QueueListener? _beforeListener;
-  QueueListener? _afterListener;
+  QueueListener? _listener;
+  bool _isClosed = false;
+  bool _isForcedClosed = false;
 
   /// initialize normal queue
   ///
@@ -27,29 +30,48 @@ class AsyncQueue {
   /// if there is an executing job, the new will have to wait for its turn
   factory AsyncQueue.autoStart() => AsyncQueue().._autoRun = true;
 
-  /// Add Before Listener
-  ///
-  /// happens before every job
-  void addQueueBeforeListener(QueueListener listener) =>
-      _beforeListener = listener;
-
-  /// Add After Listener
-  ///
-  /// happens after every job
-  void addQueueAfterListener(QueueListener listener) =>
-      _afterListener = listener;
+  /// Queue listener, emit event that indicate state of the queue
+  void addQueueListener(QueueListener listener) => _listener = listener;
 
   /// current size of the queue
   ///
   /// equal to number of jobs that left in the queue
   int get size => _size;
 
+  /// true if the queue is closed, no more job can be added
+  bool get isClosed => _isClosed;
+
+  /// close the queue so that no more job can be added
+  ///
+  /// [forceStop] if true, all remain jobs will be canceled;
+  void close({bool forceStop = false}) {
+    _isClosed = true;
+    _isForcedClosed = forceStop;
+
+    return _emitEvent(QueueEventType.queueClosed);
+  }
+
   /// Add new job into the queue
   void addJob(AsyncJob job) {
+    if (isClosed) {
+      return _emitEvent(QueueEventType.violateAddWhenClosed);
+    }
+
     final newNode = AsyncNode(job: job);
     _enqueue(newNode);
 
     if (_autoRun) start();
+  }
+
+  /// Add new job in to the queue
+  ///
+  /// if the queue is closed, throw [ClosedQueueException]
+  void addJobThrow(AsyncJob job) {
+    if (isClosed) {
+      throw ClosedQueueException("Closed Queue");
+    } else {
+      addJob(job);
+    }
   }
 
   /// to start the execution of jobs in queue
@@ -57,12 +79,15 @@ class AsyncQueue {
     if (size == 0 || _isRunning) return;
 
     _isRunning = true;
+    _emitEvent(QueueEventType.queueStart);
 
     while (size > 0) {
+      if (_isForcedClosed) break;
       await _dequeue();
     }
 
     _isRunning = false;
+    _emitEvent(QueueEventType.queueEnd);
   }
 
   /// to add node into queue
@@ -75,6 +100,8 @@ class AsyncQueue {
       _last = node;
     }
     _size++;
+
+    _emitEvent(QueueEventType.newJobAdded);
   }
 
   /// remove node, execute job
@@ -83,9 +110,7 @@ class AsyncQueue {
 
     var currentNode = _first;
 
-    if (_beforeListener != null) {
-      _beforeListener!(QueueEvent(currentQueueSize: _size));
-    }
+    _emitEvent(QueueEventType.beforeJob);
 
     await _first!.job();
 
@@ -98,8 +123,15 @@ class AsyncQueue {
     }
     _size--;
 
-    if (_afterListener != null) {
-      _afterListener!(QueueEvent(currentQueueSize: _size));
+    _emitEvent(QueueEventType.afterJob);
+  }
+
+  void _emitEvent(QueueEventType type) {
+    if (_listener != null) {
+      _listener!(QueueEvent(
+        currentQueueSize: _size,
+        type: type,
+      ));
     }
   }
 }
