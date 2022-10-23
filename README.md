@@ -87,6 +87,42 @@ final autoAsyncQ = AsyncQueue.autoStart();
   asyncQ.addQueueAfterListener((event) => print("after $event"));
 ```
 
+### Flutter use cases:
+
+This package would be useful if you have multiple widget in a screen or event in multiple screen that need to do some async request that are related to each other.
+
+For examples:
+
+- To make one request from a widget wait for another request from another widget to finish.
+- To avoid multiple requests from front end are hitting backend in a short time, that would confuse backend.
+
+Code example:
+
+```
+ @override
+  Widget build(BuildContext context) {
+    final aQ = AsyncQueue.autoStart();
+    return Scaffold(
+      body: Column(
+        children: [
+          TextButton(
+            onPressed: () async {aQ.addJob(() => Future.delayed(const Duration(seconds: 2), () => print("job1 ")));},
+            child: const Text('job1'),
+          ),
+          TextButton(
+            onPressed: () async {aQ.addJob(() => Future.delayed(const Duration(seconds: 4), () => print("jobs2")));},
+            child: const Text('job2'),
+          ),
+          TextButton(
+            onPressed: () async {aQ.addJob(() => Future.delayed(const Duration(seconds: 1), () => print("job3")));},
+            child: const Text('job3'),
+          ),
+        ],
+      ),
+    );
+  }
+```
+
 ## Appreciate Your Feedbacks and Contributes
 
 If you find anything need to be improve or want to request a feature. Please go ahead and create an issue in the [Github](https://github.com/samderlust/async_queue) repo

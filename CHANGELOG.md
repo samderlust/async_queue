@@ -1,3 +1,7 @@
+## 1.1.1
+
+- add Flutter use cases into README
+
 ## 1.1.0
 
 - [breaking change] remove `beforeListener` and `afterListener`. One listener will emit `event` with type.
