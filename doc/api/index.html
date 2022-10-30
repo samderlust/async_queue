@@ -44,13 +44,14 @@
       
 <section class="desc markdown">
   <p><a href="https://www.buymeacoffee.com/samderlust"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="" buy="" me="" a="" coffee""=""></a></p>
-<h1 id="async-queue---ensure-list-of-async-task-execute-in-order">Async Queue - ensure list of async task execute in order</h1>
-<p>This dart package ensure your pack of async task execute in order, one after the other.</p>
+<h1 id="async-queue---ensure-your-list-of-async-tasks-execute-in-order">Async Queue - ensure your list of async tasks execute in order</h1>
+<p>This dart package ensures your pack of async tasks executes in order, one after the other.</p>
 <h2 id="features">Features</h2>
 <ul>
 <li>(Normal Queue) Add multiple jobs into queue before firing</li>
 <li>(Auto Queue) Firing job as soon as any job is added to the queue</li>
 <li>(Both) Option to add queue listener that emits events that happen in the queue</li>
+<li>Retry when a job failed</li>
 </ul>
 <h2 id="installing-and-import-the-library">Installing and import the library:</h2>
 <p>Like any other package, add the library to your pubspec.yaml dependencies:</p>
@@ -109,8 +110,50 @@
 <h3 id="add-queue-listener">Add Queue Listener</h3>
 <pre class="language-dart"><code>  final asyncQ = AsyncQueue();
 
-  asyncQ.addQueueBeforeListener((event) =&gt; print("before $event"));
-  asyncQ.addQueueAfterListener((event) =&gt; print("after $event"));
+  asyncQ.addQueueListener((event) =&gt; print("$event"));
+</code></pre>
+<h3 id="tell-queue-to-retry-a-job">Tell queue to retry a job</h3>
+<pre class="language-dart"><code>    q.addJob(() async {
+      try {
+        //do something
+      } catch (e) {
+        q.retry();
+      }
+    },
+    //default is 1
+     retryTime: 3,
+    );
+</code></pre>
+<h3 id="flutter-use-cases">Flutter use cases:</h3>
+<p>This package would be useful if you have multiple widgets in a screen or even in multiple screens that need to do some async requests that are related to each other.</p>
+<p>For examples:</p>
+<ul>
+<li>To make one request from a widget wait for another request from another widget to finish.</li>
+<li>To avoid multiple requests from the front end hitting the backend in a short time, which would confuse the backend.</li>
+</ul>
+<p>Code example:</p>
+<pre class="language-dart"><code> @override
+  Widget build(BuildContext context) {
+    final aQ = AsyncQueue.autoStart();
+    return Scaffold(
+      body: Column(
+        children: [
+          TextButton(
+            onPressed: () async {aQ.addJob(() =&gt; Future.delayed(const Duration(seconds: 2), () =&gt; print("job1 ")));},
+            child: const Text('job1'),
+          ),
+          TextButton(
+            onPressed: () async {aQ.addJob(() =&gt; Future.delayed(const Duration(seconds: 4), () =&gt; print("jobs2")));},
+            child: const Text('job2'),
+          ),
+          TextButton(
+            onPressed: () async {aQ.addJob(() =&gt; Future.delayed(const Duration(seconds: 1), () =&gt; print("job3")));},
+            child: const Text('job3'),
+          ),
+        ],
+      ),
+    );
+  }
 </code></pre>
 <h2 id="appreciate-your-feedbacks-and-contributes">Appreciate Your Feedbacks and Contributes</h2>
 <p>If you find anything need to be improve or want to request a feature. Please go ahead and create an issue in the <a href="https://github.com/samderlust/async_queue">Github</a> repo</p>
@@ -160,7 +203,7 @@
 <footer>
   <span class="no-break">
     async_queue
-      1.1.0
+      1.2.0
   </span>
 
   

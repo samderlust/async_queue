@@ -1,6 +1,6 @@
 import 'package:async_queue/src/exceptions.dart';
 
-import 'async_job.dart';
+import 'async_node.dart';
 import 'queue_event.dart';
 import 'typedef.dart';
 
@@ -42,22 +42,43 @@ class AsyncQueue {
   bool get isClosed => _isClosed;
 
   /// close the queue so that no more job can be added
-  ///
-  /// [forceStop] if true, all remain jobs will be canceled;
-  void close({bool forceStop = false}) {
+  void close() {
     _isClosed = true;
-    _isForcedClosed = forceStop;
+    _emitEvent(QueueEventType.queueClosed);
+  }
 
-    return _emitEvent(QueueEventType.queueClosed);
+  /// stop and remove all remain jobs in queue
+  ///
+  /// would be useful if want to stop the queue when a job fails
+  void stop() {
+    _isForcedClosed = true;
+    _isRunning = false;
+    _first = null;
+    _last = null;
+    _size = 0;
+    _emitEvent(QueueEventType.queueStopped);
+  }
+
+  /// retry
+  void retry() {
+    if (_first!.retryCount >= _first!.maxRetry) return;
+
+    _first!.retryCount++;
+    _first!.state = JobState.failed;
   }
 
   /// Add new job into the queue
-  void addJob(AsyncJob job) {
+  ///
+  /// [retryTime] set the time that this job should retry if failed
+  /// default to 1
+  /// setting [retryTime] does not make the job auto retry
+  /// you must explicitly call retry when adding job.
+  void addJob(AsyncJob job, {int retryTime = 1}) {
     if (isClosed) {
       return _emitEvent(QueueEventType.violateAddWhenClosed);
     }
 
-    final newNode = AsyncNode(job: job);
+    final newNode = AsyncNode(job: job, maxRetry: retryTime);
     _enqueue(newNode);
 
     if (_autoRun) start();
@@ -112,18 +133,29 @@ class AsyncQueue {
 
     _emitEvent(QueueEventType.beforeJob);
 
-    await _first!.job();
+    await _first!.run();
 
-    if (_size == 1) {
-      _first = null;
-      _last = null;
-    } else {
-      _first = currentNode?.next;
-      currentNode?.next = null;
+    //incase [stop] is called
+    if (_first == null) return;
+
+    if (_first!.state == JobState.running) {
+      _first!.state = JobState.done;
     }
-    _size--;
 
-    _emitEvent(QueueEventType.afterJob);
+    if (_first!.state == JobState.done) {
+      if (_size == 1) {
+        _first = null;
+        _last = null;
+      } else {
+        _first = currentNode?.next;
+        currentNode?.next = null;
+      }
+      _size--;
+
+      _emitEvent(QueueEventType.afterJob);
+    } else {
+      _emitEvent(QueueEventType.retryJob);
+    }
   }
 
   void _emitEvent(QueueEventType type) {

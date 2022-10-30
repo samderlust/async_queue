@@ -37,6 +37,12 @@ enum QueueEventType {
   /// when queue is closed
   queueClosed,
 
+  /// when queue is stopped
+  queueStopped,
+
   /// when trying to add new job when queue is closed
   violateAddWhenClosed,
+
+  /// emit when retry
+  retryJob,
 }

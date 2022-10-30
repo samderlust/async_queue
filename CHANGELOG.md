@@ -1,3 +1,11 @@
+## 1.2.0
+
+- add `stop()` to stop and remove all remaining jobs in the queue
+- add `retry()` to retry the job, default to 1 time, but user can set as many time as they want
+- remove `{bool forceStop = false}` in `close()` since we now have `stop` method
+- fix typo
+- add test cases
+
 ## 1.1.1
 
 - add Flutter use cases into README

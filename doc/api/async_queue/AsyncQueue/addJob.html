@@ -52,7 +52,8 @@
       
 
 <span class="returntype">void</span>
-<span class="name ">addJob</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="addJob-param-job"><span class="type-annotation">AsyncJob</span> <span class="parameter-name">job</span></span></li>
+<span class="name ">addJob</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="addJob-param-job"><span class="type-annotation">AsyncJob</span> <span class="parameter-name">job</span>, </span></li>
+<li><span class="parameter" id="addJob-param-retryTime">{<span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">retryTime</span> = <span class="default-value">1</span>}</span></li>
 </ol>)
 
       
@@ -61,18 +62,22 @@
     
 <section class="desc markdown">
   <p>Add new job into the queue</p>
+<p><code>retryTime</code> set the time that this job should retry if failed
+default to 1
+setting <code>retryTime</code> does not make the job auto retry
+you must explicitly call retry when adding job.</p>
 </section>
 
 
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">void addJob(AsyncJob job) {
+  <pre class="language-dart"><code class="language-dart">void addJob(AsyncJob job, {int retryTime = 1}) {
   if (isClosed) {
     return _emitEvent(QueueEventType.violateAddWhenClosed);
   }
 
-  final newNode = AsyncNode(job: job);
+  final newNode = AsyncNode(job: job, maxRetry: retryTime);
   _enqueue(newNode);
 
   if (_autoRun) start();
@@ -119,7 +124,9 @@
     <li><a href="../../async_queue/AsyncQueue/addQueueListener.html">addQueueListener</a></li>
     <li><a href="../../async_queue/AsyncQueue/close.html">close</a></li>
     <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></li>
+    <li><a href="../../async_queue/AsyncQueue/retry.html">retry</a></li>
     <li><a href="../../async_queue/AsyncQueue/start.html">start</a></li>
+    <li><a href="../../async_queue/AsyncQueue/stop.html">stop</a></li>
     <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/toString.html">toString</a></li>
 
     <li class="section-title inherited"><a href="../../async_queue/AsyncQueue-class.html#operators">Operators</a></li>
@@ -140,7 +147,7 @@
 <footer>
   <span class="no-break">
     async_queue
-      1.1.0
+      1.2.0
   </span>
 
   
