@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
-  <meta name="description" content="API docs for the start method from the AsyncQueue class, for the Dart programming language.">
-  <title>start method - AsyncQueue class - async_queue library - Dart API</title>
+  <meta name="description" content="API docs for the stop method from the AsyncQueue class, for the Dart programming language.">
+  <title>stop method - AsyncQueue class - async_queue library - Dart API</title>
 
 
   
@@ -31,9 +31,9 @@
     <li><a href="../../index.html">async_queue</a></li>
     <li><a href="../../async_queue/async_queue-library.html">async_queue</a></li>
     <li><a href="../../async_queue/AsyncQueue-class.html">AsyncQueue</a></li>
-    <li class="self-crumb">start method</li>
+    <li class="self-crumb">stop method</li>
   </ol>
-  <div class="self-name">start</div>
+  <div class="self-name">stop</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
@@ -44,41 +44,36 @@
 
   <div id="dartdoc-main-content" class="main-content">
       <div>
-<h1><span class="kind-method">start</span> method 
+<h1><span class="kind-method">stop</span> method 
     <a href="https://dart.dev/null-safety" class="feature feature-null-safety" title="Supports the null safety language feature.">Null safety</a>
 </h1></div>
 
     <section class="multi-line-signature">
       
 
-<span class="returntype"><a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a></span>
-<span class="name ">start</span>(<wbr>)
+<span class="returntype">void</span>
+<span class="name ">stop</span>(<wbr>)
 
       
 
     </section>
     
 <section class="desc markdown">
-  <p>to start the execution of jobs in queue</p>
+  <p>stop and remove all remain jobs in queue</p>
+<p>would be useful if want to stop the queue when a job fails</p>
 </section>
 
 
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">Future start() async {
-  if (size == 0 || _isRunning) return;
-
-  _isRunning = true;
-  _emitEvent(QueueEventType.queueStart);
-
-  while (size &gt; 0) {
-    if (_isForcedClosed) break;
-    await _dequeue();
-  }
-
+  <pre class="language-dart"><code class="language-dart">void stop() {
+  _isForcedClosed = true;
   _isRunning = false;
-  _emitEvent(QueueEventType.queueEnd);
+  _first = null;
+  _last = null;
+  _size = 0;
+  _emitEvent(QueueEventType.queueStopped);
 }</code></pre>
 </section>
 
@@ -96,7 +91,7 @@
   <li><a href="../../index.html">async_queue</a></li>
   <li><a href="../../async_queue/async_queue-library.html">async_queue</a></li>
   <li><a href="../../async_queue/AsyncQueue-class.html">AsyncQueue</a></li>
-  <li class="self-crumb">start method</li>
+  <li class="self-crumb">stop method</li>
 </ol>
 
 

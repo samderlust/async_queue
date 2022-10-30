@@ -136,7 +136,7 @@ first come first serve</p>
     <h2>Methods</h2>
     <dl class="callables">
         <dt id="addJob" class="callable">
-  <span class="name"><a href="../async_queue/AsyncQueue/addJob.html">addJob</a></span><span class="signature">(<wbr><span class="parameter" id="addJob-param-job"><span class="type-annotation">AsyncJob</span> <span class="parameter-name">job</span></span>)
+  <span class="name"><a href="../async_queue/AsyncQueue/addJob.html">addJob</a></span><span class="signature">(<wbr><span class="parameter" id="addJob-param-job"><span class="type-annotation">AsyncJob</span> <span class="parameter-name">job</span>, </span><span class="parameter" id="addJob-param-retryTime">{<span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">retryTime</span> = <span class="default-value">1</span>}</span>)
     <span class="returntype parameter">&#8594; void</span>
   </span>
   
@@ -175,7 +175,7 @@ first come first serve</p>
 </dd>
 
         <dt id="close" class="callable">
-  <span class="name"><a href="../async_queue/AsyncQueue/close.html">close</a></span><span class="signature">(<wbr><span class="parameter" id="close-param-forceStop">{<span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">forceStop</span> = <span class="default-value">false</span>}</span>)
+  <span class="name"><a href="../async_queue/AsyncQueue/close.html">close</a></span><span class="signature">(<wbr>)
     <span class="returntype parameter">&#8594; void</span>
   </span>
   
@@ -200,6 +200,19 @@ first come first serve</p>
 
 </dd>
 
+        <dt id="retry" class="callable">
+  <span class="name"><a href="../async_queue/AsyncQueue/retry.html">retry</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  retry
+  
+
+</dd>
+
         <dt id="start" class="callable">
   <span class="name"><a href="../async_queue/AsyncQueue/start.html">start</a></span><span class="signature">(<wbr>)
     <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a></span>
@@ -209,6 +222,19 @@ first come first serve</p>
 </dt>
 <dd>
   to start the execution of jobs in queue
+  
+
+</dd>
+
+        <dt id="stop" class="callable">
+  <span class="name"><a href="../async_queue/AsyncQueue/stop.html">stop</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  stop and remove all remain jobs in queue
   
 
 </dd>
@@ -308,7 +334,9 @@ first come first serve</p>
     <li><a href="../async_queue/AsyncQueue/addQueueListener.html">addQueueListener</a></li>
     <li><a href="../async_queue/AsyncQueue/close.html">close</a></li>
     <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></li>
+    <li><a href="../async_queue/AsyncQueue/retry.html">retry</a></li>
     <li><a href="../async_queue/AsyncQueue/start.html">start</a></li>
+    <li><a href="../async_queue/AsyncQueue/stop.html">stop</a></li>
     <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/toString.html">toString</a></li>
 
     <li class="section-title inherited"><a href="../async_queue/AsyncQueue-class.html#operators">Operators</a></li>
@@ -326,7 +354,7 @@ first come first serve</p>
 <footer>
   <span class="no-break">
     async_queue
-      1.1.0
+      1.2.0
   </span>
 
   

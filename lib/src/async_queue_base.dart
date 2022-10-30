@@ -42,8 +42,6 @@ class AsyncQueue {
   bool get isClosed => _isClosed;
 
   /// close the queue so that no more job can be added
-  ///
-  /// [forceStop] if true, all remain jobs will be canceled;
   void close() {
     _isClosed = true;
     _emitEvent(QueueEventType.queueClosed);

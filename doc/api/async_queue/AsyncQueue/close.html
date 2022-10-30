@@ -52,8 +52,7 @@
       
 
 <span class="returntype">void</span>
-<span class="name ">close</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="close-param-forceStop">{<span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">forceStop</span> = <span class="default-value">false</span>}</span></li>
-</ol>)
+<span class="name ">close</span>(<wbr>)
 
       
 
@@ -61,18 +60,15 @@
     
 <section class="desc markdown">
   <p>close the queue so that no more job can be added</p>
-<p><code>forceStop</code> if true, all remain jobs will be canceled;</p>
 </section>
 
 
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">void close({bool forceStop = false}) {
+  <pre class="language-dart"><code class="language-dart">void close() {
   _isClosed = true;
-  _isForcedClosed = forceStop;
-
-  return _emitEvent(QueueEventType.queueClosed);
+  _emitEvent(QueueEventType.queueClosed);
 }</code></pre>
 </section>
 
@@ -116,7 +112,9 @@
     <li><a href="../../async_queue/AsyncQueue/addQueueListener.html">addQueueListener</a></li>
     <li><a href="../../async_queue/AsyncQueue/close.html">close</a></li>
     <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></li>
+    <li><a href="../../async_queue/AsyncQueue/retry.html">retry</a></li>
     <li><a href="../../async_queue/AsyncQueue/start.html">start</a></li>
+    <li><a href="../../async_queue/AsyncQueue/stop.html">stop</a></li>
     <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/toString.html">toString</a></li>
 
     <li class="section-title inherited"><a href="../../async_queue/AsyncQueue-class.html#operators">Operators</a></li>
@@ -137,7 +135,7 @@
 <footer>
   <span class="no-break">
     async_queue
-      1.1.0
+      1.2.0
   </span>
 
   
