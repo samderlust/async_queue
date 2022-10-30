@@ -96,7 +96,7 @@ void main() {
     ]);
   });
 
-  test('queue should stop executing jobs when force closed', () async {
+  test('queue should stop executing ', () async {
     final q = AsyncQueue();
 
     q.addJob(() => Future.delayed(const Duration(milliseconds: 100)));
@@ -108,9 +108,24 @@ void main() {
 
     q.start();
 
-    Future.delayed(
-        const Duration(milliseconds: 100), () => q.close(forceStop: true));
+    Future.delayed(const Duration(milliseconds: 100), () => q.stop());
 
     expect(q.size, isNot(0));
+  });
+
+  test('job failed should stop', () async {
+    final q = AsyncQueue();
+
+    q.addJob(
+      () => Future.delayed(const Duration(milliseconds: 200), () {
+        q.stop();
+      }),
+    );
+
+    q.addJob(() => Future.delayed(const Duration(milliseconds: 300)));
+
+    await q.start();
+
+    expect(q.size, 0);
   });
 }

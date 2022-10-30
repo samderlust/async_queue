@@ -1,14 +1,15 @@
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/samderlust)
 
-# Async Queue - ensure list of async task execute in order
+# Async Queue - ensure your list of async tasks execute in order
 
-This dart package ensure your pack of async task execute in order, one after the other.
+This dart package ensures your pack of async tasks executes in order, one after the other.
 
 ## Features
 
 - (Normal Queue) Add multiple jobs into queue before firing
 - (Auto Queue) Firing job as soon as any job is added to the queue
 - (Both) Option to add queue listener that emits events that happen in the queue
+- Retry when a job failed
 
 ## Installing and import the library:
 
@@ -83,18 +84,32 @@ final autoAsyncQ = AsyncQueue.autoStart();
 ```
   final asyncQ = AsyncQueue();
 
-  asyncQ.addQueueBeforeListener((event) => print("before $event"));
-  asyncQ.addQueueAfterListener((event) => print("after $event"));
+  asyncQ.addQueueListener((event) => print("$event"));
+```
+
+### Tell queue to retry a job
+
+```
+    q.addJob(() async {
+      try {
+        //do something
+      } catch (e) {
+        q.retry();
+      }
+    },
+    //default is 1
+     retryTime: 3,
+    );
 ```
 
 ### Flutter use cases:
 
-This package would be useful if you have multiple widget in a screen or event in multiple screen that need to do some async request that are related to each other.
+This package would be useful if you have multiple widgets in a screen or even in multiple screens that need to do some async requests that are related to each other.
 
 For examples:
 
 - To make one request from a widget wait for another request from another widget to finish.
-- To avoid multiple requests from front end are hitting backend in a short time, that would confuse backend.
+- To avoid multiple requests from the front end hitting the backend in a short time, which would confuse the backend.
 
 Code example:
 
