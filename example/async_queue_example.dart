@@ -10,14 +10,17 @@ Future<void> normalQ() async {
 
   asyncQ.addQueueListener((event) => print(event));
 
-  asyncQ.addJob(() =>
-      Future.delayed(const Duration(seconds: 1), () => print("normalQ: 1")));
-  asyncQ.addJob(() =>
-      Future.delayed(const Duration(seconds: 4), () => print("normalQ: 2")));
-  asyncQ.addJob(() =>
-      Future.delayed(const Duration(seconds: 2), () => print("normalQ: 3")));
-  asyncQ.addJob(() =>
-      Future.delayed(const Duration(seconds: 4), () => print("normalQ: 4")));
+  asyncQ.addJob(() => Future.delayed(
+      const Duration(milliseconds: 100), () => print("normalQ: 1")));
+  asyncQ.addJob(() => Future.delayed(
+      const Duration(milliseconds: 400), () => print("normalQ: 2")));
+  asyncQ.addJob(() => Future.delayed(const Duration(milliseconds: 200), () {
+        print("normalQ: 3");
+        print(asyncQ.list());
+      }));
+
+  asyncQ.addJob(() => Future.delayed(
+      const Duration(milliseconds: 400), () => print("normalQ: 4")));
 
   await asyncQ.start();
 }

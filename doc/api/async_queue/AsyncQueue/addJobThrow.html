@@ -50,9 +50,17 @@
 
     <section class="multi-line-signature">
       
+<div>
+  <ol class="annotation-list">
+    <li>@<a href="https://api.flutter.dev/flutter/dart-core/override-constant.html">override</a></li>
+  </ol>
+</div>
 
 <span class="returntype">void</span>
-<span class="name ">addJobThrow</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="addJobThrow-param-job"><span class="type-annotation">AsyncJob</span> <span class="parameter-name">job</span></span></li>
+<span class="name ">addJobThrow</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="addJobThrow-param-job"><span class="type-annotation"><a href="../../async_queue/AsyncJob.html">AsyncJob</a></span> <span class="parameter-name">job</span>, </span></li>
+<li><span class="parameter" id="addJobThrow-param-label">{<span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">label</span>, </span></li>
+<li><span class="parameter" id="addJobThrow-param-description"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">description</span>, </span></li>
+<li><span class="parameter" id="addJobThrow-param-retryTime"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">retryTime</span> = <span class="default-value">1</span>}</span></li>
 </ol>)
 
       
@@ -61,18 +69,29 @@
     
 <section class="desc markdown">
   <p>Add new job in to the queue</p>
-<p>if the queue is closed, throw <code>ClosedQueueException</code></p>
+<p>if the queue is closed, throw <a href="../../async_queue/ClosedQueueException-class.html">ClosedQueueException</a></p>
 </section>
 
 
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">void addJobThrow(AsyncJob job) {
+  <pre class="language-dart"><code class="language-dart">@override
+void addJobThrow(
+  AsyncJob job, {
+  String? label,
+  String? description,
+  int retryTime = 1,
+}) {
   if (isClosed) {
     throw ClosedQueueException(&quot;Closed Queue&quot;);
   } else {
-    addJob(job);
+    addJob(
+      job,
+      retryTime: retryTime,
+      label: label,
+      description: description,
+    );
   }
 }</code></pre>
 </section>
@@ -115,7 +134,10 @@
     <li><a href="../../async_queue/AsyncQueue/addJob.html">addJob</a></li>
     <li><a href="../../async_queue/AsyncQueue/addJobThrow.html">addJobThrow</a></li>
     <li><a href="../../async_queue/AsyncQueue/addQueueListener.html">addQueueListener</a></li>
+    <li><a href="../../async_queue/AsyncQueue/clear.html">clear</a></li>
     <li><a href="../../async_queue/AsyncQueue/close.html">close</a></li>
+    <li><a href="../../async_queue/AsyncQueue/getJobInfo.html">getJobInfo</a></li>
+    <li><a href="../../async_queue/AsyncQueue/list.html">list</a></li>
     <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></li>
     <li><a href="../../async_queue/AsyncQueue/retry.html">retry</a></li>
     <li><a href="../../async_queue/AsyncQueue/start.html">start</a></li>
@@ -140,7 +162,7 @@
 <footer>
   <span class="no-break">
     async_queue
-      1.2.0
+      1.3.0
   </span>
 
   
