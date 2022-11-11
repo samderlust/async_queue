@@ -6,15 +6,17 @@ class QueueEvent {
   final DateTime time = DateTime.now();
   final int currentQueueSize;
   final QueueEventType type;
+  final String? jobLabel;
 
   QueueEvent({
     required this.currentQueueSize,
     required this.type,
+    this.jobLabel,
   });
 
   @override
   String toString() =>
-      'QueueEvent(Queue Size: $currentQueueSize, time: $time, type: $type)';
+      'QueueEvent [currentQueueSize: $currentQueueSize, type: $type, jobLabel: $jobLabel, at: $time]';
 }
 
 /// types of Queue Event
@@ -45,4 +47,7 @@ enum QueueEventType {
 
   /// emit when retry
   retryJob,
+
+  /// emit when a job has reach it retry limit
+  retryLimitReached
 }

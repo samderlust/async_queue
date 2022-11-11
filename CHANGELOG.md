@@ -1,3 +1,10 @@
+## 1.3.0
+
+- add job label
+- get job list
+- emit when job hits its max retry limit
+- better way to handle retry
+
 ## 1.2.0
 
 - add `stop()` to stop and remove all remaining jobs in the queue
