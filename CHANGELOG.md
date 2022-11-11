@@ -1,9 +1,10 @@
 ## 1.3.0
 
-- add job label
-- get job list
-- emit when job hits its max retry limit
-- better way to handle retry
+- option to add `label` and `description` when adding job
+- in [AsyncQueue.addJob] if provide `retryTime = -1` will make the job retry infinitely until it success. You still have to explicitly call `retry`. Be careful when using this option.
+- emit event when job hits its max retry limit [QueueEventType.retryLimitReached]
+- add [AsyncQueue.list] and [AsyncQueue.getJobInfo] to retrieve the jobs info event when queue finished
+- add [AsyncQueue.clear] to clear the info list and also stop the queue if it's running
 
 ## 1.2.0
 

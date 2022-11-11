@@ -1,5 +1,8 @@
 import 'async_node.dart';
 
+/// Show info of the a job
+///
+/// this info can be obtain by calling [AsyncQueue.list] or [AsyncQueue.getJobInfo]
 class JobInfo {
   final String label;
   final String? description;

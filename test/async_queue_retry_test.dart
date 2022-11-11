@@ -112,4 +112,32 @@ void main() {
     expect(jobCount, failTime + 1);
     expect(retryCount, failTime);
   });
+  test('Job should not retry  if retry is not called even retryTime is -1',
+      () async {
+    final q = AsyncQueue();
+    int jobCount = 0;
+    int retryCount = 0;
+    final failTime = 12;
+
+    q.addJob(
+        () => Future.delayed(
+              const Duration(milliseconds: 100),
+              () async {
+                try {
+                  jobCount++;
+                  if (jobCount <= failTime) {
+                    // throw Exception('error');
+                  }
+                } catch (e) {
+                  retryCount++;
+                }
+              },
+            ),
+        retryTime: -1);
+
+    await q.start();
+    print(jobCount);
+    expect(jobCount, 1);
+    expect(retryCount, 0);
+  });
 }

@@ -7,3 +7,7 @@
 library async_queue;
 
 export 'src/async_queue_base.dart';
+export 'src/job_info.dart';
+export 'src/typedef.dart';
+export 'src/queue_event.dart';
+export 'src/exceptions.dart';
