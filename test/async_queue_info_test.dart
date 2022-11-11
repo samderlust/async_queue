@@ -1,5 +1,4 @@
 import 'package:async_queue/async_queue.dart';
-import 'package:async_queue/src/async_node.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 

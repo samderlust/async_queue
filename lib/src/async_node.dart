@@ -1,7 +1,23 @@
 import 'job_info.dart';
 import 'typedef.dart';
 
-enum JobState { pending, running, failed, done, pendingRetry }
+/// states of a job
+enum JobState {
+  ///pending
+  pending,
+
+  /// job is running
+  running,
+
+  ///job failed and removed from the queue
+  failed,
+
+  ///job done and removed from the queue
+  done,
+
+  ///job failed and pending retry
+  pendingRetry,
+}
 
 ///AsyncNode
 ///

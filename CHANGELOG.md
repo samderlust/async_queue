@@ -1,6 +1,7 @@
 ## 1.3.0
 
 - option to add `label` and `description` when adding job
+- [label] need to be unique unless [DuplicatedLabelException] will throw.
 - in [AsyncQueue.addJob] if provide `retryTime = -1` will make the job retry infinitely until it success. You still have to explicitly call `retry`. Be careful when using this option.
 - emit event when job hits its max retry limit [QueueEventType.retryLimitReached]
 - add [AsyncQueue.list] and [AsyncQueue.getJobInfo] to retrieve the jobs info event when queue finished
