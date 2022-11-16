@@ -33,7 +33,7 @@ void main() {
 
       await q.start();
       print(q.list());
-      final theJob = q.getJobInfo("retryJob");
+      final theJob = q.getJob("retryJob");
 
       expect(theJob, isNotNull);
       expect(theJob.state, JobState.failed);

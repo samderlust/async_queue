@@ -1,3 +1,9 @@
+## 2.0.0-dev.1
+
+- option to add the job that failed back in to the queue. (last position)
+- expose [AsyncNode]
+- [addNode] on [AsyncQueue]
+
 ## 1.3.0
 
 - option to add `label` and `description` when adding job

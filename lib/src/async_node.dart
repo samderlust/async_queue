@@ -24,9 +24,18 @@ enum JobState {
 ///single node in the queue that contain an async job
 class AsyncNode {
   final AsyncJob _job;
+
+  /// limit of retry time
   final int maxRetry;
+
+  /// unique label of the job
   final String label;
+
+  ///description
   final String? description;
+
+  /// extra data
+  Object? extra;
 
   AsyncNode? next;
   int retryCount = 0;
@@ -37,6 +46,7 @@ class AsyncNode {
     required this.label,
     this.description,
     this.maxRetry = 1,
+    this.extra,
   }) : _job = job;
 
   Future run() async {

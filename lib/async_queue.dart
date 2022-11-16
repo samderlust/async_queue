@@ -11,4 +11,4 @@ export 'src/job_info.dart';
 export 'src/typedef.dart';
 export 'src/queue_event.dart';
 export 'src/exceptions.dart';
-export 'src/async_node.dart' hide AsyncNode;
+export 'src/async_node.dart';

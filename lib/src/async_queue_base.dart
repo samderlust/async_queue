@@ -1,8 +1,6 @@
-import 'package:async_queue/src/interfaces.dart';
-import 'package:async_queue/src/exceptions.dart';
-
 import 'async_node.dart';
-import 'job_info.dart';
+import 'exceptions.dart';
+import 'interfaces.dart';
 import 'queue_event.dart';
 import 'typedef.dart';
 
@@ -19,7 +17,7 @@ class AsyncQueue extends AsyncQueueInterface {
   QueueListener? _listener;
   bool _isClosed = false;
   bool _isForcedClosed = false;
-  final Map<String, JobInfo> _map = {};
+  final Map<String, AsyncNode> _map = {};
 
   /// initialize normal queue
   ///
@@ -81,21 +79,21 @@ class AsyncQueue extends AsyncQueueInterface {
   void retry() {
     if (_first!.maxRetry == -1) {
       _first!.state = JobState.pendingRetry;
-      _updateQueueMap(_first!.info);
+      _updateQueueMap(_first!);
       return;
     }
 
     if (_first!.retryCount >= _first!.maxRetry) {
       _emitEvent(QueueEventType.retryLimitReached, _first!.label);
       _first!.state = JobState.failed;
-      _updateQueueMap(_first!.info);
+      _updateQueueMap(_first!);
 
       return;
     }
 
     _first!.retryCount++;
     _first!.state = JobState.pendingRetry;
-    _updateQueueMap(_first!.info);
+    _updateQueueMap(_first!);
   }
 
   /// Add new job into the queue
@@ -128,7 +126,7 @@ class AsyncQueue extends AsyncQueueInterface {
     if (_map.containsKey(newNode.label)) {
       throw DuplicatedLabelException("A job with this label already exists");
     }
-    _map[newNode.label] = newNode.info;
+    _map[newNode.label] = newNode;
     _enqueue(newNode);
 
     if (_autoRun) start();
@@ -195,8 +193,9 @@ class AsyncQueue extends AsyncQueueInterface {
     var currentNode = _first!;
 
     _emitEvent(QueueEventType.beforeJob, _first!.label);
+    _first!.state = JobState.running;
+    _updateQueueMap(_first!);
 
-    _updateQueueMap(_first!.info.copyWith(state: JobState.running));
     await _first!.run();
 
     //incase [stop] is called
@@ -207,7 +206,7 @@ class AsyncQueue extends AsyncQueueInterface {
     }
 
     if (_first!.state == JobState.done || _first!.state == JobState.failed) {
-      _updateQueueMap(_first!.info);
+      _updateQueueMap(_first!);
       if (_size == 1) {
         _first = null;
         _last = null;
@@ -233,10 +232,10 @@ class AsyncQueue extends AsyncQueueInterface {
   }
 
   void _updateQueueMap(
-    JobInfo info,
+    AsyncNode node,
   ) {
-    if (_map.containsKey(info.label)) {
-      _map.update(info.label, (value) => info);
+    if (_map.containsKey(node.label)) {
+      _map.update(node.label, (value) => node);
     }
   }
 
@@ -245,16 +244,33 @@ class AsyncQueue extends AsyncQueueInterface {
   /// this list still remain after the queue finished
   /// call [clear] would clear this history, also stop the queue if it's still running
   @override
-  List<JobInfo> list() {
+  List<AsyncNode> list() {
     return _map.values.toList();
   }
 
   /// get job info of a specific job by its label
   @override
-  JobInfo getJobInfo(String label) {
+  AsyncNode getJob(String label) {
     if (!_map.containsKey(label)) {
       throw InvalidJobLabelException("No job with this label found");
     }
     return _map[label]!;
+  }
+
+  @override
+  void addNode(AsyncNode node) {
+    if (isClosed) {
+      return _emitEvent(QueueEventType.violateAddWhenClosed);
+    }
+
+    _enqueue(node);
+
+    if (_map.containsKey(node.label)) {
+      throw DuplicatedLabelException("A job with this label already exists");
+    }
+    _map[node.label] = node;
+    _enqueue(node);
+
+    if (_autoRun) start();
   }
 }

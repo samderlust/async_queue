@@ -1,6 +1,6 @@
 name: async_queue
 description: This dart package ensure your pack of async tasks execute in order, one after the other.
-version: 1.3.0
+version: 2.0.0-dev.1
 homepage: https://github.com/samderlust/async_queue
 
 environment:
