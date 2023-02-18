@@ -52,7 +52,8 @@
       <span class="name ">AsyncNode</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="-param-job">{<span>required</span> <span class="type-annotation"><a href="../../async_queue/AsyncJob.html">AsyncJob</a></span> <span class="parameter-name">job</span>, </span></li>
 <li><span class="parameter" id="-param-label"><span>required</span> <span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">label</span>, </span></li>
 <li><span class="parameter" id="-param-description"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">description</span>, </span></li>
-<li><span class="parameter" id="-param-maxRetry"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">maxRetry</span> = <span class="default-value">1</span>}</span></li>
+<li><span class="parameter" id="-param-maxRetry"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">maxRetry</span> = <span class="default-value">1</span>, </span></li>
+<li><span class="parameter" id="-param-extra"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a>?</span> <span class="parameter-name">extra</span>}</span></li>
 </ol>)
     </section>
 
@@ -67,6 +68,7 @@
   required this.label,
   this.description,
   this.maxRetry = 1,
+  this.extra,
 }) : _job = job;</code></pre>
 </section>
 
@@ -99,6 +101,7 @@
       <a href="../../async_queue/AsyncNode-class.html#instance-properties">Properties</a>
     </li>
     <li><a href="../../async_queue/AsyncNode/description.html">description</a></li>
+    <li><a href="../../async_queue/AsyncNode/extra.html">extra</a></li>
     <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/hashCode.html">hashCode</a></li>
     <li><a href="../../async_queue/AsyncNode/info.html">info</a></li>
     <li><a href="../../async_queue/AsyncNode/label.html">label</a></li>
@@ -131,7 +134,7 @@
 <footer>
   <span class="no-break">
     async_queue
-      1.3.0
+      2.0.0-dev.1
   </span>
 
   

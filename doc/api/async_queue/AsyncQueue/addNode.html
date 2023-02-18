@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
-  <meta name="description" content="API docs for the addQueueListener method from the AsyncQueue class, for the Dart programming language.">
-  <title>addQueueListener method - AsyncQueue class - async_queue library - Dart API</title>
+  <meta name="description" content="API docs for the addNode method from the AsyncQueue class, for the Dart programming language.">
+  <title>addNode method - AsyncQueue class - async_queue library - Dart API</title>
 
 
   
@@ -31,9 +31,9 @@
     <li><a href="../../index.html">async_queue</a></li>
     <li><a href="../../async_queue/async_queue-library.html">async_queue</a></li>
     <li><a href="../../async_queue/AsyncQueue-class.html">AsyncQueue</a></li>
-    <li class="self-crumb">addQueueListener method</li>
+    <li class="self-crumb">addNode method</li>
   </ol>
-  <div class="self-name">addQueueListener</div>
+  <div class="self-name">addNode</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
@@ -44,30 +44,47 @@
 
   <div id="dartdoc-main-content" class="main-content">
       <div>
-<h1><span class="kind-method">addQueueListener</span> method 
+<h1><span class="kind-method">addNode</span> method 
     <a href="https://dart.dev/null-safety" class="feature feature-null-safety" title="Supports the null safety language feature.">Null safety</a>
 </h1></div>
 
     <section class="multi-line-signature">
       
+<div>
+  <ol class="annotation-list">
+    <li>@<a href="https://api.flutter.dev/flutter/dart-core/override-constant.html">override</a></li>
+  </ol>
+</div>
 
 <span class="returntype">void</span>
-<span class="name ">addQueueListener</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="addQueueListener-param-listener"><span class="type-annotation"><a href="../../async_queue/QueueListener.html">QueueListener</a></span> <span class="parameter-name">listener</span></span></li>
+<span class="name ">addNode</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="addNode-param-node"><span class="type-annotation"><a href="../../async_queue/AsyncNode-class.html">AsyncNode</a></span> <span class="parameter-name">node</span></span></li>
 </ol>)
 
       
 
     </section>
     
-<section class="desc markdown">
-  <p>Queue listener, emit event that indicate state of the queue</p>
-</section>
 
 
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">void addQueueListener(QueueListener listener) =&gt; _listener = listener;</code></pre>
+  <pre class="language-dart"><code class="language-dart">@override
+void addNode(AsyncNode node) {
+  if (isClosed) {
+    return _emitEvent(QueueEventType.violateAddWhenClosed);
+  }
+
+  _enqueue(node);
+
+  if (_map.containsKey(node.label)) {
+    throw DuplicatedLabelException(&quot;A job with this label already exists&quot;);
+  }
+  _map[node.label] = node;
+  _enqueue(node);
+
+  if (_autoRun) start();
+}</code></pre>
 </section>
 
 
@@ -84,7 +101,7 @@
   <li><a href="../../index.html">async_queue</a></li>
   <li><a href="../../async_queue/async_queue-library.html">async_queue</a></li>
   <li><a href="../../async_queue/AsyncQueue-class.html">AsyncQueue</a></li>
-  <li class="self-crumb">addQueueListener method</li>
+  <li class="self-crumb">addNode method</li>
 </ol>
 
 

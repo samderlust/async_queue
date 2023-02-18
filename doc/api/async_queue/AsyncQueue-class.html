@@ -161,6 +161,19 @@ first come first serve</p>
 
 </dd>
 
+        <dt id="addNode" class="callable">
+  <span class="name"><a href="../async_queue/AsyncQueue/addNode.html">addNode</a></span><span class="signature">(<wbr><span class="parameter" id="addNode-param-node"><span class="type-annotation"><a href="../async_queue/AsyncNode-class.html">AsyncNode</a></span> <span class="parameter-name">node</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
         <dt id="addQueueListener" class="callable">
   <span class="name"><a href="../async_queue/AsyncQueue/addQueueListener.html">addQueueListener</a></span><span class="signature">(<wbr><span class="parameter" id="addQueueListener-param-listener"><span class="type-annotation"><a href="../async_queue/QueueListener.html">QueueListener</a></span> <span class="parameter-name">listener</span></span>)
     <span class="returntype parameter">&#8594; void</span>
@@ -200,9 +213,9 @@ first come first serve</p>
 
 </dd>
 
-        <dt id="getJobInfo" class="callable">
-  <span class="name"><a href="../async_queue/AsyncQueue/getJobInfo.html">getJobInfo</a></span><span class="signature">(<wbr><span class="parameter" id="getJobInfo-param-label"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">label</span></span>)
-    <span class="returntype parameter">&#8594; <a href="../async_queue/JobInfo-class.html">JobInfo</a></span>
+        <dt id="getJob" class="callable">
+  <span class="name"><a href="../async_queue/AsyncQueue/getJob.html">getJob</a></span><span class="signature">(<wbr><span class="parameter" id="getJob-param-label"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">label</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../async_queue/AsyncNode-class.html">AsyncNode</a></span>
   </span>
   
 
@@ -215,7 +228,7 @@ first come first serve</p>
 
         <dt id="list" class="callable">
   <span class="name"><a href="../async_queue/AsyncQueue/list.html">list</a></span><span class="signature">(<wbr>)
-    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../async_queue/JobInfo-class.html">JobInfo</a></span>&gt;</span></span>
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../async_queue/AsyncNode-class.html">AsyncNode</a></span>&gt;</span></span>
   </span>
   
 
@@ -338,6 +351,7 @@ first come first serve</p>
     <h5>async_queue library</h5>
     <ol>
   <li class="section-title"><a href="../async_queue/async_queue-library.html#classes">Classes</a></li>
+  <li><a href="../async_queue/AsyncNode-class.html">AsyncNode</a></li>
   <li><a href="../async_queue/AsyncQueue-class.html">AsyncQueue</a></li>
   <li><a href="../async_queue/JobInfo-class.html">JobInfo</a></li>
   <li><a href="../async_queue/QueueEvent-class.html">QueueEvent</a></li>
@@ -382,10 +396,11 @@ first come first serve</p>
     <li class="section-title"><a href="../async_queue/AsyncQueue-class.html#instance-methods">Methods</a></li>
     <li><a href="../async_queue/AsyncQueue/addJob.html">addJob</a></li>
     <li><a href="../async_queue/AsyncQueue/addJobThrow.html">addJobThrow</a></li>
+    <li><a href="../async_queue/AsyncQueue/addNode.html">addNode</a></li>
     <li><a href="../async_queue/AsyncQueue/addQueueListener.html">addQueueListener</a></li>
     <li><a href="../async_queue/AsyncQueue/clear.html">clear</a></li>
     <li><a href="../async_queue/AsyncQueue/close.html">close</a></li>
-    <li><a href="../async_queue/AsyncQueue/getJobInfo.html">getJobInfo</a></li>
+    <li><a href="../async_queue/AsyncQueue/getJob.html">getJob</a></li>
     <li><a href="../async_queue/AsyncQueue/list.html">list</a></li>
     <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></li>
     <li><a href="../async_queue/AsyncQueue/retry.html">retry</a></li>
@@ -408,7 +423,7 @@ first come first serve</p>
 <footer>
   <span class="no-break">
     async_queue
-      1.3.0
+      2.0.0-dev.1
   </span>
 
   

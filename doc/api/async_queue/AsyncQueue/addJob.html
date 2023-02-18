@@ -73,7 +73,7 @@
 set <code>retryTime</code> to <code>-1</code> will make it retry infinitely, until job is done "be careful what you wish for!"
 setting <code>retryTime</code> does not make the job auto retry
 you must explicitly call retry when adding job.
-<code>label</code> must be unique, this can be use to get the <code>AsyncNode</code> that contains the related job
+<code>label</code> must be unique, this can be use to get the <a href="../../async_queue/AsyncNode-class.html">AsyncNode</a> that contains the related job
 will throw <a href="../../async_queue/DuplicatedLabelException-class.html">DuplicatedLabelException</a> if you the label is already in the queue
 <code>description</code> description for the job</p>
 </section>
@@ -103,7 +103,7 @@ void addJob(
   if (_map.containsKey(newNode.label)) {
     throw DuplicatedLabelException(&quot;A job with this label already exists&quot;);
   }
-  _map[newNode.label] = newNode.info;
+  _map[newNode.label] = newNode;
   _enqueue(newNode);
 
   if (_autoRun) start();
@@ -147,10 +147,11 @@ void addJob(
     <li class="section-title"><a href="../../async_queue/AsyncQueue-class.html#instance-methods">Methods</a></li>
     <li><a href="../../async_queue/AsyncQueue/addJob.html">addJob</a></li>
     <li><a href="../../async_queue/AsyncQueue/addJobThrow.html">addJobThrow</a></li>
+    <li><a href="../../async_queue/AsyncQueue/addNode.html">addNode</a></li>
     <li><a href="../../async_queue/AsyncQueue/addQueueListener.html">addQueueListener</a></li>
     <li><a href="../../async_queue/AsyncQueue/clear.html">clear</a></li>
     <li><a href="../../async_queue/AsyncQueue/close.html">close</a></li>
-    <li><a href="../../async_queue/AsyncQueue/getJobInfo.html">getJobInfo</a></li>
+    <li><a href="../../async_queue/AsyncQueue/getJob.html">getJob</a></li>
     <li><a href="../../async_queue/AsyncQueue/list.html">list</a></li>
     <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></li>
     <li><a href="../../async_queue/AsyncQueue/retry.html">retry</a></li>
@@ -176,7 +177,7 @@ void addJob(
 <footer>
   <span class="no-break">
     async_queue
-      1.3.0
+      2.0.0-dev.1
   </span>
 
   
