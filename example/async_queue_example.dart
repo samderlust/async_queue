@@ -13,6 +13,8 @@ Future<void> normalQ() async {
   asyncQ.addJob(() => Future.delayed(
       const Duration(milliseconds: 100), () => print("normalQ: 1")));
   asyncQ.addJob(() => Future.delayed(
+      const Duration(milliseconds: 100), () => print("normalQ: 1")));
+  asyncQ.addJob(() => Future.delayed(
       const Duration(milliseconds: 400), () => print("normalQ: 2")));
   asyncQ.addJob(() => Future.delayed(const Duration(milliseconds: 200), () {
         print("normalQ: 3");

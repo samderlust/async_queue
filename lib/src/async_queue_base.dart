@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:async_queue/src/interfaces.dart';
 import 'package:async_queue/src/exceptions.dart';
 
@@ -10,7 +12,7 @@ import 'typedef.dart';
 ///
 /// a queue of async jobs that ensure those jobs will be execute in order,
 /// first come first serve
-class AsyncQueue extends AsyncQueueInterface {
+final class AsyncQueue implements AsyncQueueInterface {
   AsyncNode? _first;
   AsyncNode? _last;
   int _size = 0;
@@ -20,6 +22,7 @@ class AsyncQueue extends AsyncQueueInterface {
   bool _isClosed = false;
   bool _isForcedClosed = false;
   final Map<String, JobInfo> _map = {};
+  final Map<String, Timer> _debounceMap = {};
 
   /// initialize normal queue
   ///
@@ -108,12 +111,11 @@ class AsyncQueue extends AsyncQueueInterface {
   /// will throw [DuplicatedLabelException] if you the label is already in the queue
   /// [description] description for the job
   @override
-  void addJob(
-    AsyncJob job, {
-    String? label,
-    String? description,
-    int retryTime = 1,
-  }) {
+  void addJob(AsyncJob job,
+      {String? label,
+      String? description,
+      int retryTime = 1,
+      int debounceTime = 0}) {
     if (isClosed) {
       return _emitEvent(QueueEventType.violateAddWhenClosed);
     }
@@ -121,13 +123,13 @@ class AsyncQueue extends AsyncQueueInterface {
     final newNode = AsyncNode(
       job: job,
       maxRetry: retryTime,
-      label: label ?? DateTime.now().toIso8601String(),
+      label: label ?? job.runtimeType.toString(),
       description: description,
     );
 
-    if (_map.containsKey(newNode.label)) {
-      throw DuplicatedLabelException("A job with this label already exists");
-    }
+    // if (_map.containsKey(newNode.label)) {
+    //   throw DuplicatedLabelException("A job with this label already exists");
+    // }
     _map[newNode.label] = newNode.info;
     _enqueue(newNode);
 

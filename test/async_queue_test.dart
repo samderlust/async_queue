@@ -128,4 +128,30 @@ void main() {
 
     expect(q.size, 0);
   });
+
+  test('jobs labels', () async {
+    final q = AsyncQueue();
+
+    void printA() {
+      print("A");
+    }
+
+    void printText(String text) {
+      print(text);
+    }
+
+    q.addJob(() => Future.delayed(const Duration(milliseconds: 100), printA));
+    q.addJob(() => Future.delayed(const Duration(milliseconds: 100), printA));
+
+    q.addJob(() => Future.delayed(
+        const Duration(milliseconds: 200), () => printText("text1")));
+    q.addJob(() => Future.delayed(
+        const Duration(milliseconds: 200), () => printText("text2")));
+
+    q.list().forEach((element) {
+      print(element.label);
+    });
+
+    await q.start();
+  });
 }

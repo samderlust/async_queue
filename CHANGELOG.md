@@ -1,3 +1,9 @@
+## 1.4.0
+
+- add debounce option
+- add throttle option
+- remove throwing error if add duplicated job
+
 ## 1.3.0
 
 - option to add `label` and `description` when adding job

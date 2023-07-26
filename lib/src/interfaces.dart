@@ -1,7 +1,7 @@
 import 'job_info.dart';
 import 'typedef.dart';
 
-abstract class AsyncQueueInterface {
+abstract interface class AsyncQueueInterface {
   void close();
   void stop([Function? callBack]);
   void clear([Function? callBack]);
