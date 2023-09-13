@@ -20,18 +20,34 @@ class AsyncQueue extends AsyncQueueInterface {
   bool _isClosed = false;
   bool _isForcedClosed = false;
   final Map<String, JobInfo> _map = {};
+  final bool allowDuplicate;
+  final bool cancelPreviousJobIfDuplicated;
+  final bool throwIfDuplicated;
 
   /// initialize normal queue
   ///
   /// which require user to explicitly call [start()]
   /// in order to execute all the jobs in the queue
-  AsyncQueue();
+  AsyncQueue({
+    this.allowDuplicate = false,
+    this.cancelPreviousJobIfDuplicated = false,
+    this.throwIfDuplicated = false,
+  }) : assert(cancelPreviousJobIfDuplicated && allowDuplicate);
 
   /// initialize auto queue
   ///
   /// which will execute the job when it added into the queue
   /// if there is an executing job, the new will have to wait for its turn
-  factory AsyncQueue.autoStart() => AsyncQueue().._autoRun = true;
+  factory AsyncQueue.autoStart({
+    bool? allowDuplicate,
+    bool? cancelPreviousJobIfDuplicated,
+    bool? throwIfDuplicated,
+  }) =>
+      AsyncQueue(
+        allowDuplicate: allowDuplicate ?? false,
+        cancelPreviousJobIfDuplicated: cancelPreviousJobIfDuplicated ?? false,
+        throwIfDuplicated: throwIfDuplicated ?? false,
+      ).._autoRun = true;
 
   /// Queue listener, emit event that indicate state of the queue
   void addQueueListener(QueueListener listener) => _listener = listener;
@@ -126,34 +142,22 @@ class AsyncQueue extends AsyncQueueInterface {
     );
 
     if (_map.containsKey(newNode.label)) {
-      throw DuplicatedLabelException("A job with this label already exists");
+      if (throwIfDuplicated) {
+        throw DuplicatedLabelException("A job with this label already exists");
+      } else if (allowDuplicate) {
+        if (cancelPreviousJobIfDuplicated) {
+        } else {
+          final length = _map.keys.where((k) => k.contains(newNode.label));
+
+          _map["${newNode.label}_$length"] = newNode.info;
+        }
+      }
+    } else {
+      _map[newNode.label] = newNode.info;
     }
-    _map[newNode.label] = newNode.info;
     _enqueue(newNode);
 
     if (_autoRun) start();
-  }
-
-  /// Add new job in to the queue
-  ///
-  /// if the queue is closed, throw [ClosedQueueException]
-  @override
-  void addJobThrow(
-    AsyncJob job, {
-    String? label,
-    String? description,
-    int retryTime = 1,
-  }) {
-    if (isClosed) {
-      throw ClosedQueueException("Closed Queue");
-    } else {
-      addJob(
-        job,
-        retryTime: retryTime,
-        label: label,
-        description: description,
-      );
-    }
   }
 
   /// to start the execution of jobs in queue

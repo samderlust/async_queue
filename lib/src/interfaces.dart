@@ -7,7 +7,6 @@ abstract class AsyncQueueInterface {
   void clear([Function? callBack]);
   void retry();
   void addJob(AsyncJob job, {String? label, int retryTime});
-  void addJobThrow(AsyncJob job);
   Future<void> start();
   List<JobInfo> list();
   JobInfo getJobInfo(String label);
