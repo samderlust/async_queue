@@ -1,4 +1,3 @@
-import 'job_info.dart';
 import 'typedef.dart';
 
 /// states of a job
@@ -39,21 +38,13 @@ class AsyncNode {
     this.maxRetry = 1,
   }) : _job = job;
 
-  Future run() async {
+  dynamic run(PreviousResult previousResult) async {
     state = JobState.running;
-    await _job();
+    return await _job(previousResult);
   }
 
   @override
   String toString() {
     return 'AsyncNode(maxRetry: $maxRetry, label: $label, description: $description, retryCount: $retryCount)';
   }
-
-  JobInfo get info => JobInfo(
-        label: label,
-        description: description,
-        maxRetry: maxRetry,
-        retryCount: retryCount,
-        state: state,
-      );
 }

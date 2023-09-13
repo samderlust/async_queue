@@ -31,17 +31,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   final List<String> _jobsList = [];
   final List<String> _clickList = [];
-  final aQ = AsyncQueue.autoStart();
+  final aQ = AsyncQueue.autoStart(
+      // allowDuplicate: false,
+      );
   String _label = '';
 
   @override
   void initState() {
     super.initState();
     aQ.addQueueListener(
-        (event) => setState(() => _label = "running ${event.jobLabel}"));
+      (event) =>
+          setState(() => _label = "running ${event.jobLabel} - ${event.type}"),
+    );
   }
 
   @override
@@ -95,7 +98,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       setState(() => _clickList.add("button 1"));
                       aQ.addJob(
                         label: "Job 1",
-                        () => Future.delayed(const Duration(milliseconds: 1000),
+                        (_) => Future.delayed(
+                            const Duration(milliseconds: 1000),
                             () => setState(() => _jobsList.add("Job 1"))),
                       );
                     },
@@ -106,7 +110,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       setState(() => _clickList.add("button 2"));
                       aQ.addJob(
                         label: "Job 2",
-                        () => Future.delayed(const Duration(milliseconds: 4000),
+                        (_) => Future.delayed(
+                            const Duration(milliseconds: 4000),
                             () => setState(() => _jobsList.add("Job 2"))),
                       );
                     },
@@ -117,7 +122,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       setState(() => _clickList.add("button 3"));
                       aQ.addJob(
                         label: "Job 3",
-                        () => Future.delayed(const Duration(milliseconds: 2000),
+                        (_) => Future.delayed(
+                            const Duration(milliseconds: 2000),
                             () => setState(() => _jobsList.add("Job 3"))),
                       );
                     },
@@ -128,7 +134,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       setState(() => _clickList.add("button 4"));
                       aQ.addJob(
                         label: "Job 4",
-                        () => Future.delayed(const Duration(milliseconds: 1000),
+                        (_) => Future.delayed(
+                            const Duration(milliseconds: 1000),
                             () => setState(() => _jobsList.add("Job 4"))),
                       );
                     },

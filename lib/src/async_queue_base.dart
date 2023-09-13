@@ -1,8 +1,7 @@
-import 'package:async_queue/src/interfaces.dart';
 import 'package:async_queue/src/exceptions.dart';
+import 'package:async_queue/src/interfaces.dart';
 
 import 'async_node.dart';
-import 'job_info.dart';
 import 'queue_event.dart';
 import 'typedef.dart';
 
@@ -18,20 +17,41 @@ class AsyncQueue extends AsyncQueueInterface {
   bool _isRunning = false;
   QueueListener? _listener;
   bool _isClosed = false;
-  bool _isForcedClosed = false;
-  final Map<String, JobInfo> _map = {};
+  bool _isForcedStop = false;
+  final Map<String, int> _map = {};
+  dynamic _previousResult;
+
+  /// allow to add multiple jobs with same label
+  ///
+  /// label is required id you want to check job exists correctly
+  final bool allowDuplicate;
+
+  /// throw [DuplicatedLabelException] if duplicated job added
+  ///
+  /// [allowDuplicate] must be false
+  final bool throwIfDuplicate;
 
   /// initialize normal queue
   ///
   /// which require user to explicitly call [start()]
   /// in order to execute all the jobs in the queue
-  AsyncQueue();
+  AsyncQueue({
+    this.allowDuplicate = true,
+    this.throwIfDuplicate = false,
+  }) : assert(throwIfDuplicate ? !allowDuplicate : true);
 
   /// initialize auto queue
   ///
   /// which will execute the job when it added into the queue
   /// if there is an executing job, the new will have to wait for its turn
-  factory AsyncQueue.autoStart() => AsyncQueue().._autoRun = true;
+  factory AsyncQueue.autoStart({
+    bool? allowDuplicate,
+    bool? throwIfDuplicate,
+  }) =>
+      AsyncQueue(
+        allowDuplicate: allowDuplicate ?? true,
+        throwIfDuplicate: throwIfDuplicate ?? false,
+      ).._autoRun = true;
 
   /// Queue listener, emit event that indicate state of the queue
   void addQueueListener(QueueListener listener) => _listener = listener;
@@ -58,12 +78,14 @@ class AsyncQueue extends AsyncQueueInterface {
   @override
   void stop([Function? callBack]) {
     if (callBack != null) callBack();
-    _isForcedClosed = true;
+    _isForcedStop = true;
     _isRunning = false;
     _first = null;
     _last = null;
     _size = 0;
     _map.clear();
+    _previousResult = null;
+    _isForcedStop = false;
     _emitEvent(QueueEventType.queueStopped);
   }
 
@@ -81,24 +103,24 @@ class AsyncQueue extends AsyncQueueInterface {
   void retry() {
     if (_first!.maxRetry == -1) {
       _first!.state = JobState.pendingRetry;
-      _updateQueueMap(_first!.info);
       return;
     }
 
     if (_first!.retryCount >= _first!.maxRetry) {
       _emitEvent(QueueEventType.retryLimitReached, _first!.label);
       _first!.state = JobState.failed;
-      _updateQueueMap(_first!.info);
 
       return;
     }
 
     _first!.retryCount++;
     _first!.state = JobState.pendingRetry;
-    _updateQueueMap(_first!.info);
   }
 
   /// Add new job into the queue
+  ///
+  /// [AsyncJob] (Function(dynamic) job) will provide previous job's result to use in the next job if you wish to
+  /// otherwise just ignore it using `_`.
   ///
   /// [retryTime] set the time that this job should retry if failed, default to 1,
   /// set [retryTime] to `-1` will make it retry infinitely, until job is done "be careful what you wish for!"
@@ -126,10 +148,21 @@ class AsyncQueue extends AsyncQueueInterface {
     );
 
     if (_map.containsKey(newNode.label)) {
-      throw DuplicatedLabelException("A job with this label already exists");
+      if (allowDuplicate) {
+        _updateQueueMap(newNode.label);
+        _enqueue(newNode);
+      } else {
+        if (throwIfDuplicate) {
+          throw DuplicatedLabelException(
+            "A job with this label already exists",
+          );
+        }
+      }
+    } else {
+      _enqueue(newNode);
+
+      _updateQueueMap(newNode.label);
     }
-    _map[newNode.label] = newNode.info;
-    _enqueue(newNode);
 
     if (_autoRun) start();
   }
@@ -165,7 +198,7 @@ class AsyncQueue extends AsyncQueueInterface {
     _emitEvent(QueueEventType.queueStart);
 
     while (size > 0) {
-      if (_isForcedClosed) break;
+      if (_isForcedStop) break;
       await _dequeue();
     }
 
@@ -196,8 +229,7 @@ class AsyncQueue extends AsyncQueueInterface {
 
     _emitEvent(QueueEventType.beforeJob, _first!.label);
 
-    _updateQueueMap(_first!.info.copyWith(state: JobState.running));
-    await _first!.run();
+    _previousResult = await _first!.run(_previousResult);
 
     //incase [stop] is called
     if (_first == null) return;
@@ -207,13 +239,16 @@ class AsyncQueue extends AsyncQueueInterface {
     }
 
     if (_first!.state == JobState.done || _first!.state == JobState.failed) {
-      _updateQueueMap(_first!.info);
       if (_size == 1) {
         _first = null;
         _last = null;
       } else {
         _first = currentNode.next;
         currentNode.next = null;
+      }
+      //remove job from info map
+      if (_map.containsKey(jobLabel)) {
+        _map.remove(jobLabel);
       }
       _size--;
       _emitEvent(QueueEventType.afterJob, jobLabel);
@@ -232,29 +267,25 @@ class AsyncQueue extends AsyncQueueInterface {
     }
   }
 
-  void _updateQueueMap(
-    JobInfo info,
-  ) {
-    if (_map.containsKey(info.label)) {
-      _map.update(info.label, (value) => info);
-    }
+  void _updateQueueMap(String jobLabel) {
+    _map.update(jobLabel, (value) => value++, ifAbsent: () => 1);
   }
 
   /// get the list of job info of the queue
   ///
   /// this list still remain after the queue finished
   /// call [clear] would clear this history, also stop the queue if it's still running
-  @override
-  List<JobInfo> list() {
-    return _map.values.toList();
-  }
+  // @override
+  // List<JobInfo> list() {
+  //   return _map.values.toList();
+  // }
 
   /// get job info of a specific job by its label
-  @override
-  JobInfo getJobInfo(String label) {
-    if (!_map.containsKey(label)) {
-      throw InvalidJobLabelException("No job with this label found");
-    }
-    return _map[label]!;
-  }
+  // @override
+  // JobInfo getJobInfo(String label) {
+  //   if (!_map.containsKey(label)) {
+  //     throw InvalidJobLabelException("No job with this label found");
+  //   }
+  //   return _map[label]!;
+  // }
 }

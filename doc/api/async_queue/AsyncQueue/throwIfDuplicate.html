@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
-  <meta name="description" content="API docs for the addQueueListener method from the AsyncQueue class, for the Dart programming language.">
-  <title>addQueueListener method - AsyncQueue class - async_queue library - Dart API</title>
+  <meta name="description" content="API docs for the throwIfDuplicate property from the AsyncQueue class, for the Dart programming language.">
+  <title>throwIfDuplicate property - AsyncQueue class - async_queue library - Dart API</title>
 
 
   
@@ -31,9 +31,9 @@
     <li><a href="../../index.html">async_queue</a></li>
     <li><a href="../../async_queue/async_queue-library.html">async_queue</a></li>
     <li><a href="../../async_queue/AsyncQueue-class.html">AsyncQueue</a></li>
-    <li class="self-crumb">addQueueListener method</li>
+    <li class="self-crumb">throwIfDuplicate property</li>
   </ol>
-  <div class="self-name">addQueueListener</div>
+  <div class="self-name">throwIfDuplicate</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
@@ -57,29 +57,26 @@
       data-above-sidebar="async_queue&#47;AsyncQueue-class-sidebar.html"
       data-below-sidebar="">
       <div>
-<h1><span class="kind-method">addQueueListener</span> method 
+<h1><span class="kind-property">throwIfDuplicate</span> property 
 </h1></div>
 
-    <section class="multi-line-signature">
-      
+        <section class="multi-line-signature">
+          
+          <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a>
+          <span class="name ">throwIfDuplicate</span>
+          <div class="features"><span class="feature">final</span></div>
 
-<span class="returntype">void</span>
-<span class="name ">addQueueListener</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="addQueueListener-param-listener"><span class="type-annotation"><a href="../../async_queue/QueueListener.html">QueueListener</a></span> <span class="parameter-name">listener</span></span></li>
-</ol>)
-
-      
-
-    </section>
-    
+        </section>
+        
 <section class="desc markdown">
-  <p>Queue listener, emit event that indicate state of the queue</p>
+  <p>throw <a href="../../async_queue/DuplicatedLabelException-class.html">DuplicatedLabelException</a> if duplicated job added</p>
+<p><a href="../../async_queue/AsyncQueue/allowDuplicate.html">allowDuplicate</a> must be false</p>
 </section>
 
-
-    
+        
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">void addQueueListener(QueueListener listener) =&gt; _listener = listener;</code></pre>
+  <pre class="language-dart"><code class="language-dart">final bool throwIfDuplicate;</code></pre>
 </section>
 
 
@@ -97,7 +94,7 @@
     <li><a href="../../index.html">async_queue</a></li>
     <li><a href="../../async_queue/async_queue-library.html">async_queue</a></li>
     <li><a href="../../async_queue/AsyncQueue-class.html">AsyncQueue</a></li>
-    <li class="self-crumb">addQueueListener method</li>
+    <li class="self-crumb">throwIfDuplicate property</li>
 </ol>
 
 
