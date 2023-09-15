@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
-  <meta name="description" content="API docs for the stop method from the AsyncQueue class, for the Dart programming language.">
-  <title>stop method - AsyncQueue class - async_queue library - Dart API</title>
+  <meta name="description" content="API docs for the currentJobUpdate method from the AsyncQueue class, for the Dart programming language.">
+  <title>currentJobUpdate method - AsyncQueue class - async_queue library - Dart API</title>
 
 
   
@@ -31,9 +31,9 @@
     <li><a href="../../index.html">async_queue</a></li>
     <li><a href="../../async_queue/async_queue-library.html">async_queue</a></li>
     <li><a href="../../async_queue/AsyncQueue-class.html">AsyncQueue</a></li>
-    <li class="self-crumb">stop method</li>
+    <li class="self-crumb">currentJobUpdate method</li>
   </ol>
-  <div class="self-name">stop</div>
+  <div class="self-name">currentJobUpdate</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
@@ -57,51 +57,27 @@
       data-above-sidebar="async_queue&#47;AsyncQueue-class-sidebar.html"
       data-below-sidebar="">
       <div>
-<h1><span class="kind-method">stop</span> method 
+<h1><span class="kind-method">currentJobUpdate</span> method 
 </h1></div>
 
     <section class="multi-line-signature">
       
-  <div>
-    <ol class="annotation-list">
-        <li>@<a href="https://api.flutter.dev/flutter/dart-core/override-constant.html">override</a></li>
-    </ol>
-  </div>
 
 <span class="returntype">void</span>
-<span class="name ">stop</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="stop-param-callBack">[<span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Function-class.html">Function</a>?</span> <span class="parameter-name">callBack</span>]</span></li>
+<span class="name ">currentJobUpdate</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="currentJobUpdate-param-updater"><span class="type-annotation"><a href="../../async_queue/CurrentJobUpdater.html">CurrentJobUpdater</a></span> <span class="parameter-name">updater</span></span></li>
 </ol>)
 
       
 
     </section>
     
-<section class="desc markdown">
-  <p>stop and remove all remain jobs in queue</p>
-<p>would be useful if want to stop the queue when a job fails
-<code>callBack</code> is where use can call cancelToken or side effect</p>
-</section>
 
 
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">@override
-void stop([Function? callBack]) {
-  if (callBack != null) callBack();
-  _currentJobUpdater?.call(null);
-
-  _isForcedStop = true;
-  _isRunning = false;
-  _first = null;
-  _last = null;
-  _size = 0;
-  _map.clear();
-  _previousResult = null;
-  _isForcedStop = false;
-
-  _emitEvent(QueueEventType.queueStopped);
-}</code></pre>
+  <pre class="language-dart"><code class="language-dart">void currentJobUpdate(CurrentJobUpdater updater) =&gt;
+    _currentJobUpdater = updater;</code></pre>
 </section>
 
 
@@ -119,7 +95,7 @@ void stop([Function? callBack]) {
     <li><a href="../../index.html">async_queue</a></li>
     <li><a href="../../async_queue/async_queue-library.html">async_queue</a></li>
     <li><a href="../../async_queue/AsyncQueue-class.html">AsyncQueue</a></li>
-    <li class="self-crumb">stop method</li>
+    <li class="self-crumb">currentJobUpdate method</li>
 </ol>
 
 
