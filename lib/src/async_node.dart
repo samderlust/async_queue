@@ -24,7 +24,7 @@ enum JobState {
 class AsyncNode {
   final AsyncJob _job;
   final int maxRetry;
-  final String label;
+  final Object label;
   final String? description;
 
   AsyncNode? next;

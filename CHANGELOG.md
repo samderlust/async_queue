@@ -1,3 +1,8 @@
+## 2.0.0-dev.3
+
+- change job label type from `String` to `Object`
+- add current running job label `CurrentJobUpdater` to notify every time a job is running
+
 ## 2.0.0-dev.2
 
 - add Flutter example

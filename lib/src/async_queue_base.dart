@@ -18,8 +18,10 @@ class AsyncQueue extends AsyncQueueInterface {
   QueueListener? _listener;
   bool _isClosed = false;
   bool _isForcedStop = false;
-  final Map<String, int> _map = {};
+  final Map<Object, int> _map = {};
   dynamic _previousResult;
+
+  CurrentJobUpdater? _currentJobUpdater;
 
   /// allow to add multiple jobs with same label
   ///
@@ -56,6 +58,9 @@ class AsyncQueue extends AsyncQueueInterface {
   /// Queue listener, emit event that indicate state of the queue
   void addQueueListener(QueueListener listener) => _listener = listener;
 
+  void currentJobUpdate(CurrentJobUpdater updater) =>
+      _currentJobUpdater = updater;
+
   /// current size of the queue
   ///
   /// equal to number of jobs that left in the queue
@@ -78,6 +83,8 @@ class AsyncQueue extends AsyncQueueInterface {
   @override
   void stop([Function? callBack]) {
     if (callBack != null) callBack();
+    _currentJobUpdater?.call(null);
+
     _isForcedStop = true;
     _isRunning = false;
     _first = null;
@@ -86,6 +93,7 @@ class AsyncQueue extends AsyncQueueInterface {
     _map.clear();
     _previousResult = null;
     _isForcedStop = false;
+
     _emitEvent(QueueEventType.queueStopped);
   }
 
@@ -132,7 +140,7 @@ class AsyncQueue extends AsyncQueueInterface {
   @override
   void addJob(
     AsyncJob job, {
-    String? label,
+    Object? label,
     String? description,
     int retryTime = 1,
   }) {
@@ -225,6 +233,8 @@ class AsyncQueue extends AsyncQueueInterface {
     if (_first == null) return;
     final jobLabel = _first!.label;
 
+    _currentJobUpdater?.call(jobLabel);
+
     var currentNode = _first!;
 
     _emitEvent(QueueEventType.beforeJob, _first!.label);
@@ -255,19 +265,18 @@ class AsyncQueue extends AsyncQueueInterface {
     } else {
       _emitEvent(QueueEventType.retryJob, jobLabel);
     }
+    _currentJobUpdater?.call(null);
   }
 
-  void _emitEvent(QueueEventType type, [String? label]) {
-    if (_listener != null) {
-      _listener!(QueueEvent(
-        currentQueueSize: _size,
-        type: type,
-        jobLabel: label,
-      ));
-    }
+  void _emitEvent(QueueEventType type, [Object? label]) {
+    _listener?.call(QueueEvent(
+      currentQueueSize: _size,
+      type: type,
+      jobLabel: label,
+    ));
   }
 
-  void _updateQueueMap(String jobLabel) {
+  void _updateQueueMap(Object jobLabel) {
     _map.update(jobLabel, (value) => value++, ifAbsent: () => 1);
   }
 

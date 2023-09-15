@@ -8,3 +8,4 @@ typedef PreviousResult = dynamic;
 /// Ignore it using `_` when declare if you don't need it.
 typedef AsyncJob = Function(PreviousResult previousResult);
 typedef QueueListener = Function(QueueEvent event);
+typedef CurrentJobUpdater = Function(Object? jobLabel);
