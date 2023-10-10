@@ -1,3 +1,24 @@
+## 2.0.0-dev.3
+
+- change job label type from `String` to `Object`
+- add current running job label `CurrentJobUpdater` to notify every time a job is running
+
+## 2.0.0-dev.2
+
+- add Flutter example
+- add `allowDuplicate` default to true.
+- add `throwIfDuplicate` default to false.
+- change `AsyncJob = Function(PreviousResult previousResult)`. This allows you to access the previous job's result when adding new job.
+- remove `list`, `getJobInfo`, and `addNode` from version `2.0.0-dev.1` as not needed.
+- hide `AsyncNode`
+- remove `JobInfo`
+
+## 2.0.0-dev.1
+
+- option to add the job that failed back in to the queue. (last position)
+- expose [AsyncNode]
+- [addNode] on [AsyncQueue]
+
 ## 1.3.0
 
 - option to add `label` and `description` when adding job

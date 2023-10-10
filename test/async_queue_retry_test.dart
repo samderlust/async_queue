@@ -19,7 +19,7 @@ void main() {
     final List<int> res = [];
 
     q.addJob(
-        () => Future.delayed(const Duration(milliseconds: 200), () async {
+        (_) => Future.delayed(const Duration(milliseconds: 200), () async {
               try {
                 jobRunCount++;
                 print(jobRunCount);
@@ -31,7 +31,7 @@ void main() {
         retryTime: 1);
 
     q.addJob(
-      () => Future.delayed(const Duration(milliseconds: 200), () {
+      (_) => Future.delayed(const Duration(milliseconds: 200), () {
         jobRunCount++;
         res.add(2);
       }),
@@ -49,7 +49,7 @@ void main() {
     int jobCount = 0;
 
     q.addJob(
-        () => Future.delayed(const Duration(milliseconds: 200), () async {
+        (_) => Future.delayed(const Duration(milliseconds: 200), () async {
               try {
                 jobCount++;
                 throw Exception('error');
@@ -70,7 +70,7 @@ void main() {
     int jobCount = 0;
 
     q.addJob(
-      () => Future.delayed(const Duration(milliseconds: 200), () async {
+      (_) => Future.delayed(const Duration(milliseconds: 200), () async {
         try {
           jobCount++;
           throw Exception('error');
@@ -91,7 +91,7 @@ void main() {
     final failTime = 12;
 
     q.addJob(
-        () => Future.delayed(
+        (_) => Future.delayed(
               const Duration(milliseconds: 100),
               () async {
                 try {
@@ -120,7 +120,7 @@ void main() {
     final failTime = 12;
 
     q.addJob(
-        () => Future.delayed(
+        (_) => Future.delayed(
               const Duration(milliseconds: 100),
               () async {
                 try {

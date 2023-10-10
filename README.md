@@ -49,7 +49,7 @@ import 'package:async_queue/async_queue.dart';
     // normalQ: 4
 ```
 
-### 2. Auto Star Queue
+### 2. Auto Start Queue
 
 ```
 final autoAsyncQ = AsyncQueue.autoStart();

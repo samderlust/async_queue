@@ -11,7 +11,7 @@
   
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" rel="stylesheet">
   
   <link rel="stylesheet" href="../static-assets/github.css?v1">
   <link rel="stylesheet" href="../static-assets/styles.css?v1">
@@ -21,12 +21,12 @@
 </head>
 
 
-<body data-base-href="../" data-using-base-href="false">
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
 
 <div id="overlay-under-drawer"></div>
 
 <header id="title">
-  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="../index.html">async_queue</a></li>
     <li><a href="../async_queue/async_queue-library.html">async_queue</a></li>
@@ -36,22 +36,34 @@
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
+  <div class="toggle" id="theme-button">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        brightness_4
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        brightness_5
+      </span>
+    </label>
+  </div>
 </header>
-
 <main>
 
-
-  <div id="dartdoc-main-content" class="main-content">
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="async_queue&#47;async_queue-library-sidebar.html"
+      data-below-sidebar="async_queue&#47;JobInfo-class-sidebar.html">
       <div>
 <h1><span class="kind-class">JobInfo</span> class 
-    <a href="https://dart.dev/null-safety" class="feature feature-null-safety" title="Supports the null safety language feature.">Null safety</a>
  
 </h1></div>
 
     
 <section class="desc markdown">
   <p>Show info of the a job</p>
-<p>this info can be obtain by calling <a href="../async_queue/AsyncQueue/list.html">AsyncQueue.list</a> or <a href="../async_queue/AsyncQueue/getJobInfo.html">AsyncQueue.getJobInfo</a></p>
+<p>this info can be obtain by calling <code>AsyncQueue.list</code> or <code>AsyncQueue.getJobInfo</code></p>
 </section>
 
 
@@ -81,7 +93,7 @@
 </dt>
 <dd>
   
-  <div class="features">final</div>
+  <div class="features"><span class="feature">final</span></div>
 
 </dd>
 
@@ -92,7 +104,7 @@
 </dt>
 <dd>
   The hash code for this object.
-  <div class="features">read-only, override</div>
+  <div class="features"><span class="feature">read-only</span><span class="feature">override</span></div>
 
 </dd>
 
@@ -103,7 +115,7 @@
 </dt>
 <dd>
   
-  <div class="features">final</div>
+  <div class="features"><span class="feature">final</span></div>
 
 </dd>
 
@@ -114,7 +126,7 @@
 </dt>
 <dd>
   
-  <div class="features">final</div>
+  <div class="features"><span class="feature">final</span></div>
 
 </dd>
 
@@ -125,7 +137,7 @@
 </dt>
 <dd>
   
-  <div class="features">final</div>
+  <div class="features"><span class="feature">final</span></div>
 
 </dd>
 
@@ -136,7 +148,7 @@
 </dt>
 <dd class="inherited">
   A representation of the runtime type of the object.
-  <div class="features">read-only, inherited</div>
+  <div class="features"><span class="feature">read-only</span><span class="feature">inherited</span></div>
 
 </dd>
 
@@ -147,7 +159,7 @@
 </dt>
 <dd>
   
-  <div class="features">final</div>
+  <div class="features"><span class="feature">final</span></div>
 
 </dd>
 
@@ -181,8 +193,8 @@
 
 </dt>
 <dd class="inherited">
-  Invoked when a non-existent method or property is accessed.
-  <div class="features">inherited</div>
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
 
 </dd>
 
@@ -195,7 +207,7 @@
 </dt>
 <dd>
   A string representation of this object.
-  <div class="features">override</div>
+  <div class="features"><span class="feature">override</span></div>
 
 </dd>
 
@@ -216,7 +228,7 @@
 </dt>
 <dd>
   The equality operator.
-  <div class="features">override</div>
+  <div class="features"><span class="feature">override</span></div>
 
 </dd>
 
@@ -230,78 +242,25 @@
   </div> <!-- /.main-content -->
 
   <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
-    <header id="header-search-sidebar" class="hidden-l">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
   <form class="search-sidebar" role="search">
     <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
 </header>
 
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
-  <li><a href="../index.html">async_queue</a></li>
-  <li><a href="../async_queue/async_queue-library.html">async_queue</a></li>
-  <li class="self-crumb">JobInfo class</li>
+    <li><a href="../index.html">async_queue</a></li>
+    <li><a href="../async_queue/async_queue-library.html">async_queue</a></li>
+    <li class="self-crumb">JobInfo class</li>
 </ol>
 
 
-    <h5>async_queue library</h5>
-    <ol>
-  <li class="section-title"><a href="../async_queue/async_queue-library.html#classes">Classes</a></li>
-  <li><a href="../async_queue/AsyncQueue-class.html">AsyncQueue</a></li>
-  <li><a href="../async_queue/JobInfo-class.html">JobInfo</a></li>
-  <li><a href="../async_queue/QueueEvent-class.html">QueueEvent</a></li>
-
-
-
-
-
-
-  <li class="section-title"><a href="../async_queue/async_queue-library.html#enums">Enums</a></li>
-  <li><a href="../async_queue/JobState.html">JobState</a></li>
-  <li><a href="../async_queue/QueueEventType.html">QueueEventType</a></li>
-
-  <li class="section-title"><a href="../async_queue/async_queue-library.html#typedefs">Typedefs</a></li>
-  <li><a href="../async_queue/AsyncJob.html">AsyncJob</a></li>
-  <li><a href="../async_queue/QueueListener.html">QueueListener</a></li>
-
-  <li class="section-title"><a href="../async_queue/async_queue-library.html#exceptions">Exceptions</a></li>
-  <li><a href="../async_queue/ClosedQueueException-class.html">ClosedQueueException</a></li>
-  <li><a href="../async_queue/DuplicatedLabelException-class.html">DuplicatedLabelException</a></li>
-  <li><a href="../async_queue/InvalidJobLabelException-class.html">InvalidJobLabelException</a></li>
-</ol>
-
+    <!--<h5>async_queue library</h5>-->
+    <div id="dartdoc-sidebar-left-content"></div>
   </div>
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
-    <ol>
-
-        <li class="section-title"><a href="../async_queue/JobInfo-class.html#constructors">Constructors</a></li>
-          <li><a href="../async_queue/JobInfo/JobInfo.html">JobInfo</a></li>
-
-
-    <li class="section-title">
-      <a href="../async_queue/JobInfo-class.html#instance-properties">Properties</a>
-    </li>
-    <li><a href="../async_queue/JobInfo/description.html">description</a></li>
-    <li><a href="../async_queue/JobInfo/hashCode.html">hashCode</a></li>
-    <li><a href="../async_queue/JobInfo/label.html">label</a></li>
-    <li><a href="../async_queue/JobInfo/maxRetry.html">maxRetry</a></li>
-    <li><a href="../async_queue/JobInfo/retryCount.html">retryCount</a></li>
-    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/runtimeType.html">runtimeType</a></li>
-    <li><a href="../async_queue/JobInfo/state.html">state</a></li>
-
-    <li class="section-title"><a href="../async_queue/JobInfo-class.html#instance-methods">Methods</a></li>
-    <li><a href="../async_queue/JobInfo/copyWith.html">copyWith</a></li>
-    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></li>
-    <li><a href="../async_queue/JobInfo/toString.html">toString</a></li>
-
-    <li class="section-title"><a href="../async_queue/JobInfo-class.html#operators">Operators</a></li>
-    <li><a href="../async_queue/JobInfo/operator_equals.html">operator ==</a></li>
-
-
-
-
-</ol>
-
   </div><!--/.sidebar-offcanvas-->
 
 </main>
@@ -309,7 +268,7 @@
 <footer>
   <span class="no-break">
     async_queue
-      1.3.0
+      2.0.0-dev.2
   </span>
 
   

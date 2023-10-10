@@ -11,7 +11,7 @@
   
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" rel="stylesheet">
   
   <link rel="stylesheet" href="../static-assets/github.css?v1">
   <link rel="stylesheet" href="../static-assets/styles.css?v1">
@@ -21,12 +21,12 @@
 </head>
 
 
-<body data-base-href="../" data-using-base-href="false">
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
 
 <div id="overlay-under-drawer"></div>
 
 <header id="title">
-  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="../index.html">async_queue</a></li>
     <li><a href="../async_queue/async_queue-library.html">async_queue</a></li>
@@ -36,15 +36,27 @@
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
+  <div class="toggle" id="theme-button">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        brightness_4
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        brightness_5
+      </span>
+    </label>
+  </div>
 </header>
-
 <main>
 
-
-  <div id="dartdoc-main-content" class="main-content">
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="async_queue&#47;async_queue-library-sidebar.html"
+      data-below-sidebar="async_queue&#47;AsyncQueue-class-sidebar.html">
       <div>
 <h1><span class="kind-class">AsyncQueue</span> class 
-    <a href="https://dart.dev/null-safety" class="feature feature-null-safety" title="Supports the null safety language feature.">Null safety</a>
  
 </h1></div>
 
@@ -63,13 +75,13 @@ first come first serve</p>
 
     <dl class="constructor-summary-list">
         <dt id="AsyncQueue" class="callable">
-          <span class="name"><a href="../async_queue/AsyncQueue/AsyncQueue.html">AsyncQueue</a></span><span class="signature">()</span>
+          <span class="name"><a href="../async_queue/AsyncQueue/AsyncQueue.html">AsyncQueue</a></span><span class="signature">(<span class="parameter" id="-param-allowDuplicate">{<span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">allowDuplicate</span> = <span class="default-value">true</span>, </span><span class="parameter" id="-param-throwIfDuplicate"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">throwIfDuplicate</span> = <span class="default-value">false</span>}</span>)</span>
         </dt>
         <dd>
           initialize normal queue
         </dd>
         <dt id="AsyncQueue.autoStart" class="callable">
-          <span class="name"><a href="../async_queue/AsyncQueue/AsyncQueue.autoStart.html">AsyncQueue.autoStart</a></span><span class="signature">()</span>
+          <span class="name"><a href="../async_queue/AsyncQueue/AsyncQueue.autoStart.html">AsyncQueue.autoStart</a></span><span class="signature">(<span class="parameter" id="autoStart-param-allowDuplicate">{<span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a>?</span> <span class="parameter-name">allowDuplicate</span>, </span><span class="parameter" id="autoStart-param-throwIfDuplicate"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a>?</span> <span class="parameter-name">throwIfDuplicate</span>}</span>)</span>
         </dt>
         <dd>
           initialize auto queue
@@ -82,6 +94,17 @@ first come first serve</p>
       <h2>Properties</h2>
 
       <dl class="properties">
+        <dt id="allowDuplicate" class="property">
+  <span class="name"><a href="../async_queue/AsyncQueue/allowDuplicate.html">allowDuplicate</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> 
+
+</dt>
+<dd>
+  allow to add multiple jobs with same label
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
         <dt id="hashCode" class="property inherited">
   <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/hashCode.html">hashCode</a></span>
   <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> 
@@ -89,7 +112,7 @@ first come first serve</p>
 </dt>
 <dd class="inherited">
   The hash code for this object.
-  <div class="features">read-only, inherited</div>
+  <div class="features"><span class="feature">read-only</span><span class="feature">inherited</span></div>
 
 </dd>
 
@@ -100,7 +123,7 @@ first come first serve</p>
 </dt>
 <dd>
   true if the queue is closed, no more job can be added
-  <div class="features">read-only</div>
+  <div class="features"><span class="feature">read-only</span></div>
 
 </dd>
 
@@ -111,7 +134,7 @@ first come first serve</p>
 </dt>
 <dd class="inherited">
   A representation of the runtime type of the object.
-  <div class="features">read-only, inherited</div>
+  <div class="features"><span class="feature">read-only</span><span class="feature">inherited</span></div>
 
 </dd>
 
@@ -122,7 +145,18 @@ first come first serve</p>
 </dt>
 <dd>
   current size of the queue
-  <div class="features">read-only</div>
+  <div class="features"><span class="feature">read-only</span></div>
+
+</dd>
+
+        <dt id="throwIfDuplicate" class="property">
+  <span class="name"><a href="../async_queue/AsyncQueue/throwIfDuplicate.html">throwIfDuplicate</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> 
+
+</dt>
+<dd>
+  throw <a href="../async_queue/DuplicatedLabelException-class.html">DuplicatedLabelException</a> if duplicated job added
+  <div class="features"><span class="feature">final</span></div>
 
 </dd>
 
@@ -136,7 +170,7 @@ first come first serve</p>
     <h2>Methods</h2>
     <dl class="callables">
         <dt id="addJob" class="callable">
-  <span class="name"><a href="../async_queue/AsyncQueue/addJob.html">addJob</a></span><span class="signature">(<wbr><span class="parameter" id="addJob-param-job"><span class="type-annotation"><a href="../async_queue/AsyncJob.html">AsyncJob</a></span> <span class="parameter-name">job</span>, </span><span class="parameter" id="addJob-param-label">{<span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">label</span>, </span><span class="parameter" id="addJob-param-description"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">description</span>, </span><span class="parameter" id="addJob-param-retryTime"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">retryTime</span> = <span class="default-value">1</span>}</span>)
+  <span class="name"><a href="../async_queue/AsyncQueue/addJob.html">addJob</a></span><span class="signature">(<wbr><span class="parameter" id="addJob-param-job"><span class="type-annotation"><a href="../async_queue/AsyncJob.html">AsyncJob</a></span> <span class="parameter-name">job</span>, </span><span class="parameter" id="addJob-param-label">{<span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a>?</span> <span class="parameter-name">label</span>, </span><span class="parameter" id="addJob-param-description"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">description</span>, </span><span class="parameter" id="addJob-param-retryTime"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">retryTime</span> = <span class="default-value">1</span>}</span>)
     <span class="returntype parameter">&#8594; void</span>
   </span>
   
@@ -200,28 +234,15 @@ first come first serve</p>
 
 </dd>
 
-        <dt id="getJobInfo" class="callable">
-  <span class="name"><a href="../async_queue/AsyncQueue/getJobInfo.html">getJobInfo</a></span><span class="signature">(<wbr><span class="parameter" id="getJobInfo-param-label"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">label</span></span>)
-    <span class="returntype parameter">&#8594; <a href="../async_queue/JobInfo-class.html">JobInfo</a></span>
+        <dt id="currentJobUpdate" class="callable">
+  <span class="name"><a href="../async_queue/AsyncQueue/currentJobUpdate.html">currentJobUpdate</a></span><span class="signature">(<wbr><span class="parameter" id="currentJobUpdate-param-updater"><span class="type-annotation"><a href="../async_queue/CurrentJobUpdater.html">CurrentJobUpdater</a></span> <span class="parameter-name">updater</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
   </span>
   
 
 </dt>
 <dd>
-  get job info of a specific job by its label
   
-
-</dd>
-
-        <dt id="list" class="callable">
-  <span class="name"><a href="../async_queue/AsyncQueue/list.html">list</a></span><span class="signature">(<wbr>)
-    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../async_queue/JobInfo-class.html">JobInfo</a></span>&gt;</span></span>
-  </span>
-  
-
-</dt>
-<dd>
-  get the list of job info of the queue
   
 
 </dd>
@@ -234,8 +255,8 @@ first come first serve</p>
 
 </dt>
 <dd class="inherited">
-  Invoked when a non-existent method or property is accessed.
-  <div class="features">inherited</div>
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
 
 </dd>
 
@@ -287,7 +308,7 @@ first come first serve</p>
 </dt>
 <dd class="inherited">
   A string representation of this object.
-  <div class="features">inherited</div>
+  <div class="features"><span class="feature">inherited</span></div>
 
 </dd>
 
@@ -308,7 +329,7 @@ first come first serve</p>
 </dt>
 <dd class="inherited">
   The equality operator.
-  <div class="features">inherited</div>
+  <div class="features"><span class="feature">inherited</span></div>
 
 </dd>
 
@@ -322,85 +343,25 @@ first come first serve</p>
   </div> <!-- /.main-content -->
 
   <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
-    <header id="header-search-sidebar" class="hidden-l">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
   <form class="search-sidebar" role="search">
     <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
 </header>
 
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
-  <li><a href="../index.html">async_queue</a></li>
-  <li><a href="../async_queue/async_queue-library.html">async_queue</a></li>
-  <li class="self-crumb">AsyncQueue class</li>
+    <li><a href="../index.html">async_queue</a></li>
+    <li><a href="../async_queue/async_queue-library.html">async_queue</a></li>
+    <li class="self-crumb">AsyncQueue class</li>
 </ol>
 
 
-    <h5>async_queue library</h5>
-    <ol>
-  <li class="section-title"><a href="../async_queue/async_queue-library.html#classes">Classes</a></li>
-  <li><a href="../async_queue/AsyncQueue-class.html">AsyncQueue</a></li>
-  <li><a href="../async_queue/JobInfo-class.html">JobInfo</a></li>
-  <li><a href="../async_queue/QueueEvent-class.html">QueueEvent</a></li>
-
-
-
-
-
-
-  <li class="section-title"><a href="../async_queue/async_queue-library.html#enums">Enums</a></li>
-  <li><a href="../async_queue/JobState.html">JobState</a></li>
-  <li><a href="../async_queue/QueueEventType.html">QueueEventType</a></li>
-
-  <li class="section-title"><a href="../async_queue/async_queue-library.html#typedefs">Typedefs</a></li>
-  <li><a href="../async_queue/AsyncJob.html">AsyncJob</a></li>
-  <li><a href="../async_queue/QueueListener.html">QueueListener</a></li>
-
-  <li class="section-title"><a href="../async_queue/async_queue-library.html#exceptions">Exceptions</a></li>
-  <li><a href="../async_queue/ClosedQueueException-class.html">ClosedQueueException</a></li>
-  <li><a href="../async_queue/DuplicatedLabelException-class.html">DuplicatedLabelException</a></li>
-  <li><a href="../async_queue/InvalidJobLabelException-class.html">InvalidJobLabelException</a></li>
-</ol>
-
+    <!--<h5>async_queue library</h5>-->
+    <div id="dartdoc-sidebar-left-content"></div>
   </div>
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
-    <ol>
-
-        <li class="section-title"><a href="../async_queue/AsyncQueue-class.html#constructors">Constructors</a></li>
-          <li><a href="../async_queue/AsyncQueue/AsyncQueue.html">AsyncQueue</a></li>
-          <li><a href="../async_queue/AsyncQueue/AsyncQueue.autoStart.html">autoStart</a></li>
-
-
-    <li class="section-title">
-      <a href="../async_queue/AsyncQueue-class.html#instance-properties">Properties</a>
-    </li>
-    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/hashCode.html">hashCode</a></li>
-    <li><a href="../async_queue/AsyncQueue/isClosed.html">isClosed</a></li>
-    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/runtimeType.html">runtimeType</a></li>
-    <li><a href="../async_queue/AsyncQueue/size.html">size</a></li>
-
-    <li class="section-title"><a href="../async_queue/AsyncQueue-class.html#instance-methods">Methods</a></li>
-    <li><a href="../async_queue/AsyncQueue/addJob.html">addJob</a></li>
-    <li><a href="../async_queue/AsyncQueue/addJobThrow.html">addJobThrow</a></li>
-    <li><a href="../async_queue/AsyncQueue/addQueueListener.html">addQueueListener</a></li>
-    <li><a href="../async_queue/AsyncQueue/clear.html">clear</a></li>
-    <li><a href="../async_queue/AsyncQueue/close.html">close</a></li>
-    <li><a href="../async_queue/AsyncQueue/getJobInfo.html">getJobInfo</a></li>
-    <li><a href="../async_queue/AsyncQueue/list.html">list</a></li>
-    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></li>
-    <li><a href="../async_queue/AsyncQueue/retry.html">retry</a></li>
-    <li><a href="../async_queue/AsyncQueue/start.html">start</a></li>
-    <li><a href="../async_queue/AsyncQueue/stop.html">stop</a></li>
-    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/toString.html">toString</a></li>
-
-    <li class="section-title inherited"><a href="../async_queue/AsyncQueue-class.html#operators">Operators</a></li>
-    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/operator_equals.html">operator ==</a></li>
-
-
-
-
-</ol>
-
   </div><!--/.sidebar-offcanvas-->
 
 </main>
@@ -408,7 +369,7 @@ first come first serve</p>
 <footer>
   <span class="no-break">
     async_queue
-      1.3.0
+      2.0.0-dev.2
   </span>
 
   

@@ -1,4 +1,3 @@
-import 'job_info.dart';
 import 'typedef.dart';
 
 abstract class AsyncQueueInterface {
@@ -9,6 +8,6 @@ abstract class AsyncQueueInterface {
   void addJob(AsyncJob job, {String? label, int retryTime});
   void addJobThrow(AsyncJob job);
   Future<void> start();
-  List<JobInfo> list();
-  JobInfo getJobInfo(String label);
+  // List<JobInfo> list();
+  // JobInfo getJobInfo(String label);
 }

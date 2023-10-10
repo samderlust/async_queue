@@ -6,7 +6,7 @@ class QueueEvent {
   final DateTime time = DateTime.now();
   final int currentQueueSize;
   final QueueEventType type;
-  final String? jobLabel;
+  final Object? jobLabel;
 
   QueueEvent({
     required this.currentQueueSize,
