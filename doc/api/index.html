@@ -73,13 +73,13 @@
 <h2 id="usage">Usage</h2>
 <h3 id="1-normal-queue">1. Normal Queue</h3>
 <pre class="language-dart"><code> final asyncQ = AsyncQueue();
-  asyncQ.addJob(() =&gt;
+  asyncQ.addJob((_) =&gt;
       Future.delayed(const Duration(seconds: 1), () =&gt; print("normalQ: 1")));
-  asyncQ.addJob(() =&gt;
+  asyncQ.addJob((_) =&gt;
       Future.delayed(const Duration(seconds: 4), () =&gt; print("normalQ: 2")));
-  asyncQ.addJob(() =&gt;
+  asyncQ.addJob((_) =&gt;
       Future.delayed(const Duration(seconds: 2), () =&gt; print("normalQ: 3")));
-  asyncQ.addJob(() =&gt;
+  asyncQ.addJob((_) =&gt;
       Future.delayed(const Duration(seconds: 1), () =&gt; print("normalQ: 4")));
 
   await asyncQ.start();
@@ -92,20 +92,20 @@
 <h3 id="2-auto-start-queue">2. Auto Start Queue</h3>
 <pre class="language-dart"><code>final autoAsyncQ = AsyncQueue.autoStart();
 
-  autoAsyncQ.addJob(() =&gt;
+  autoAsyncQ.addJob((_) =&gt;
       Future.delayed(const Duration(seconds: 1), () =&gt; print("AutoQ: 1")));
   await Future.delayed(const Duration(seconds: 6));
-  autoAsyncQ.addJob(() =&gt;
+  autoAsyncQ.addJob((_) =&gt;
       Future.delayed(const Duration(seconds: 0), () =&gt; print("AutoQ: 1.2")));
-  autoAsyncQ.addJob(() =&gt;
+  autoAsyncQ.addJob((_) =&gt;
       Future.delayed(const Duration(seconds: 0), () =&gt; print("AutoQ: 1.3")));
-  autoAsyncQ.addJob(() =&gt;
+  autoAsyncQ.addJob((_) =&gt;
       Future.delayed(const Duration(seconds: 4), () =&gt; print("AutoQ: 2")));
-  autoAsyncQ.addJob(() =&gt;
+  autoAsyncQ.addJob((_) =&gt;
       Future.delayed(const Duration(seconds: 3), () =&gt; print("AutoQ: 2.2")));
-  autoAsyncQ.addJob(() =&gt;
+  autoAsyncQ.addJob((_) =&gt;
       Future.delayed(const Duration(seconds: 2), () =&gt; print("AutoQ: 3")));
-  autoAsyncQ.addJob(() =&gt;
+  autoAsyncQ.addJob((_) =&gt;
       Future.delayed(const Duration(seconds: 1), () =&gt; print("AutoQ: 4")));
 
     // AutoQ: 1
@@ -148,15 +148,15 @@
       body: Column(
         children: [
           TextButton(
-            onPressed: () async {aQ.addJob(() =&gt; Future.delayed(const Duration(seconds: 2), () =&gt; print("job1 ")));},
+            onPressed: () async {aQ.addJob((_) =&gt; Future.delayed(const Duration(seconds: 2), () =&gt; print("job1 ")));},
             child: const Text('job1'),
           ),
           TextButton(
-            onPressed: () async {aQ.addJob(() =&gt; Future.delayed(const Duration(seconds: 4), () =&gt; print("jobs2")));},
+            onPressed: () async {aQ.addJob((_) =&gt; Future.delayed(const Duration(seconds: 4), () =&gt; print("jobs2")));},
             child: const Text('job2'),
           ),
           TextButton(
-            onPressed: () async {aQ.addJob(() =&gt; Future.delayed(const Duration(seconds: 1), () =&gt; print("job3")));},
+            onPressed: () async {aQ.addJob((_) =&gt; Future.delayed(const Duration(seconds: 1), () =&gt; print("job3")));},
             child: const Text('job3'),
           ),
         ],
@@ -213,7 +213,7 @@
 <footer>
   <span class="no-break">
     async_queue
-      2.0.0-dev.3
+      2.0.0
   </span>
 
   
