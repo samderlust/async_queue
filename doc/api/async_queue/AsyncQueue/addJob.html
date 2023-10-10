@@ -81,7 +81,7 @@
     
 <section class="desc markdown">
   <p>Add new job into the queue</p>
-<p><a href="../../async_queue/AsyncJob.html">AsyncJob</a> (Function(dynamic) job) will provide previous job's result to use in the next job if you wish to
+<p><a href="../../async_queue/AsyncJob.html">AsyncJob</a> (Function(PreviousResult dynamic) job) will provide previous job's result to use in the next job if you wish to use,
 otherwise just ignore it using <code>_</code>.</p>
 <p><code>retryTime</code> set the time that this job should retry if failed, default to 1,
 set <code>retryTime</code> to <code>-1</code> will make it retry infinitely, until job is done "be careful what you wish for!"
@@ -165,7 +165,7 @@ void addJob(
 <footer>
   <span class="no-break">
     async_queue
-      2.0.0-dev.2
+      2.0.0-dev.3
   </span>
 
   

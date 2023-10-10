@@ -127,7 +127,7 @@ class AsyncQueue extends AsyncQueueInterface {
 
   /// Add new job into the queue
   ///
-  /// [AsyncJob] (Function(dynamic) job) will provide previous job's result to use in the next job if you wish to
+  /// [AsyncJob] (Function(PreviousResult dynamic) job) will provide previous job's result to use in the next job if you wish to use,
   /// otherwise just ignore it using `_`.
   ///
   /// [retryTime] set the time that this job should retry if failed, default to 1,

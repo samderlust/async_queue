@@ -32,13 +32,13 @@ import 'package:async_queue/async_queue.dart';
 
 ```
  final asyncQ = AsyncQueue();
-  asyncQ.addJob(() =>
+  asyncQ.addJob((_) =>
       Future.delayed(const Duration(seconds: 1), () => print("normalQ: 1")));
-  asyncQ.addJob(() =>
+  asyncQ.addJob((_) =>
       Future.delayed(const Duration(seconds: 4), () => print("normalQ: 2")));
-  asyncQ.addJob(() =>
+  asyncQ.addJob((_) =>
       Future.delayed(const Duration(seconds: 2), () => print("normalQ: 3")));
-  asyncQ.addJob(() =>
+  asyncQ.addJob((_) =>
       Future.delayed(const Duration(seconds: 1), () => print("normalQ: 4")));
 
   await asyncQ.start();
@@ -54,20 +54,20 @@ import 'package:async_queue/async_queue.dart';
 ```
 final autoAsyncQ = AsyncQueue.autoStart();
 
-  autoAsyncQ.addJob(() =>
+  autoAsyncQ.addJob((_) =>
       Future.delayed(const Duration(seconds: 1), () => print("AutoQ: 1")));
   await Future.delayed(const Duration(seconds: 6));
-  autoAsyncQ.addJob(() =>
+  autoAsyncQ.addJob((_) =>
       Future.delayed(const Duration(seconds: 0), () => print("AutoQ: 1.2")));
-  autoAsyncQ.addJob(() =>
+  autoAsyncQ.addJob((_) =>
       Future.delayed(const Duration(seconds: 0), () => print("AutoQ: 1.3")));
-  autoAsyncQ.addJob(() =>
+  autoAsyncQ.addJob((_) =>
       Future.delayed(const Duration(seconds: 4), () => print("AutoQ: 2")));
-  autoAsyncQ.addJob(() =>
+  autoAsyncQ.addJob((_) =>
       Future.delayed(const Duration(seconds: 3), () => print("AutoQ: 2.2")));
-  autoAsyncQ.addJob(() =>
+  autoAsyncQ.addJob((_) =>
       Future.delayed(const Duration(seconds: 2), () => print("AutoQ: 3")));
-  autoAsyncQ.addJob(() =>
+  autoAsyncQ.addJob((_) =>
       Future.delayed(const Duration(seconds: 1), () => print("AutoQ: 4")));
 
     // AutoQ: 1
@@ -121,15 +121,15 @@ Code example:
       body: Column(
         children: [
           TextButton(
-            onPressed: () async {aQ.addJob(() => Future.delayed(const Duration(seconds: 2), () => print("job1 ")));},
+            onPressed: () async {aQ.addJob((_) => Future.delayed(const Duration(seconds: 2), () => print("job1 ")));},
             child: const Text('job1'),
           ),
           TextButton(
-            onPressed: () async {aQ.addJob(() => Future.delayed(const Duration(seconds: 4), () => print("jobs2")));},
+            onPressed: () async {aQ.addJob((_) => Future.delayed(const Duration(seconds: 4), () => print("jobs2")));},
             child: const Text('job2'),
           ),
           TextButton(
-            onPressed: () async {aQ.addJob(() => Future.delayed(const Duration(seconds: 1), () => print("job3")));},
+            onPressed: () async {aQ.addJob((_) => Future.delayed(const Duration(seconds: 1), () => print("job3")));},
             child: const Text('job3'),
           ),
         ],
