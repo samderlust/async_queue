@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'typedef.dart';
 
 /// states of a job
@@ -26,10 +28,14 @@ class AsyncNode {
   final int maxRetry;
   final Object label;
   final String? description;
+  final Completer<dynamic> completer = Completer<dynamic>();
 
   AsyncNode? next;
   int retryCount = 0;
   JobState state = JobState.pending;
+
+  /// A future that completes when this job finishes with its result.
+  Future<dynamic> get future => completer.future;
 
   AsyncNode({
     required AsyncJob job,

@@ -139,14 +139,15 @@ class AsyncQueue extends AsyncQueueInterface {
   /// will throw [DuplicatedLabelException] if you the label is already in the queue
   /// [description] description for the job
   @override
-  void addJob(
+  Future<dynamic> addJob(
     AsyncJob job, {
     Object? label,
     String? description,
     int retryTime = 1,
   }) {
     if (isClosed) {
-      return _emitEvent(QueueEventType.violateAddWhenClosed);
+      _emitEvent(QueueEventType.violateAddWhenClosed);
+      return Future.value(null);
     }
 
     final newNode = AsyncNode(
@@ -166,6 +167,7 @@ class AsyncQueue extends AsyncQueueInterface {
             "A job with this label already exists",
           );
         }
+        return Future.value(null);
       }
     } else {
       _enqueue(newNode);
@@ -174,13 +176,15 @@ class AsyncQueue extends AsyncQueueInterface {
     }
 
     if (_autoRun) start();
+
+    return newNode.future;
   }
 
   /// Add new job in to the queue
   ///
   /// if the queue is closed, throw [ClosedQueueException]
   @override
-  void addJobThrow(
+  Future<dynamic> addJobThrow(
     AsyncJob job, {
     Object? label,
     String? description,
@@ -188,14 +192,13 @@ class AsyncQueue extends AsyncQueueInterface {
   }) {
     if (isClosed) {
       throw ClosedQueueException("Closed Queue");
-    } else {
-      addJob(
-        job,
-        retryTime: retryTime,
-        label: label,
-        description: description,
-      );
     }
+    return addJob(
+      job,
+      retryTime: retryTime,
+      label: label,
+      description: description,
+    );
   }
 
   /// to start the execution of jobs in queue
@@ -250,6 +253,13 @@ class AsyncQueue extends AsyncQueueInterface {
 
       _emitEvent(QueueEventType.jobError, _first!.label);
       retry();
+
+      // complete with error if retry limit reached
+      if (_first!.state == JobState.failed &&
+          !currentNode.completer.isCompleted) {
+        currentNode.completer.completeError(e);
+      }
+
       _currentJobUpdater?.call(null);
       return;
     }
@@ -262,6 +272,9 @@ class AsyncQueue extends AsyncQueueInterface {
     }
 
     if (_first!.state == JobState.done || _first!.state == JobState.failed) {
+      if (!currentNode.completer.isCompleted) {
+        currentNode.completer.complete(_previousResult);
+      }
       if (_size == 1) {
         _first = null;
         _last = null;

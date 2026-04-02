@@ -1,18 +1,27 @@
-## 2.1.0
+## 3.0.0
 
+### New Features
+- **`addJob` now returns a `Future`** — await the result of any individual job without relying on listeners. Works alongside `previousResult` without conflict.
+- **Automatic retry on job exceptions** — jobs that throw are automatically retried up to `retryTime` times. Manual `retry()` still works for custom logic.
+- add `QueueEventType.jobError` event emitted when a job throws an exception
+
+### Bug Fixes
 - fix post-increment bug in duplicate label tracking (value was never actually incremented)
 - fix null crash when `retry()` is called on an empty queue
 - fix `_previousResult` leaking across separate `start()` runs
-- add automatic retry on job exceptions — jobs that throw are now retried up to `retryTime` without needing to manually call `retry()`
-- add `QueueEventType.jobError` event emitted when a job throws an exception
 - fix `addJobThrow` label parameter type from `String?` to `Object?` to match `addJob`
+- fix `_isForcedStop` flag now properly cleared after `start()` loop exits instead of immediately in `stop()`
+
+### Code Cleanup
 - sync `AsyncQueueInterface` signatures with actual implementation
 - remove dead commented-out code (`list()`, `getJobInfo()`) from source and interface
-- remove unused `dart:math` import and stray `print()` calls from tests
-- fix `_isForcedStop` flag now properly cleared after `start()` loop exits instead of immediately in `stop()`
-- clean up `async_queue_info_test.dart` with actual assertions instead of commented-out expects
+- remove unused imports and stray `print()` calls from tests
+
+### Tests
+- add test coverage for `addJob` returning `Future` (result, chaining, autoStart, previousResult, closed queue)
 - add test coverage for `AsyncQueue.autoStart()` (execution order, late adds, events, stop)
 - add meaningful job label assertions in event tests
+- clean up `async_queue_info_test.dart` with actual assertions
 
 ## 2.0.2
 

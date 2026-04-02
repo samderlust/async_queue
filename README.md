@@ -87,6 +87,38 @@ final autoAsyncQ = AsyncQueue.autoStart();
   asyncQ.addQueueListener((event) => print("$event"));
 ```
 
+### Await job result (v3.0.0+)
+
+`addJob` returns a `Future` that completes with the job's return value. This works alongside `previousResult` — they serve different purposes.
+
+```dart
+final q = AsyncQueue.autoStart();
+
+// Each addJob returns a Future you can await for its result
+final userFuture = q.addJob((_) async {
+  return await api.getUser();  // returns "Sam"
+});
+
+// previousResult still chains between jobs
+final postsFuture = q.addJob((previousResult) async {
+  return await api.getPostsFor(previousResult);
+});
+
+final user = await userFuture;     // "Sam"
+final posts = await postsFuture;   // [Post, Post, ...]
+```
+
+### Automatic retry on exceptions (v3.0.0+)
+
+Jobs that throw are automatically retried up to `retryTime` times. You no longer need to catch errors and call `retry()` manually (though you still can for custom logic).
+
+```dart
+q.addJob((_) async {
+  // if this throws, it will be retried automatically
+  return await api.fetchData();
+}, retryTime: 3);
+```
+
 ### Tell queue to retry a job
 
 ```
