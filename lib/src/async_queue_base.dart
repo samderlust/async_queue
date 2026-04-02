@@ -151,6 +151,7 @@ class AsyncQueue extends AsyncQueueInterface {
     Object? label,
     String? description,
     int retryTime = 1,
+    int priority = 0,
   }) {
     if (isClosed) {
       _emitEvent(QueueEventType.violateAddWhenClosed);
@@ -162,6 +163,7 @@ class AsyncQueue extends AsyncQueueInterface {
       maxRetry: retryTime,
       label: label ?? DateTime.now().toIso8601String(),
       description: description,
+      priority: priority,
     );
 
     if (_map.containsKey(newNode.label)) {
@@ -196,6 +198,7 @@ class AsyncQueue extends AsyncQueueInterface {
     Object? label,
     String? description,
     int retryTime = 1,
+    int priority = 0,
   }) {
     if (isClosed) {
       throw ClosedQueueException("Closed Queue");
@@ -205,6 +208,7 @@ class AsyncQueue extends AsyncQueueInterface {
       retryTime: retryTime,
       label: label,
       description: description,
+      priority: priority,
     );
   }
 
@@ -227,14 +231,38 @@ class AsyncQueue extends AsyncQueueInterface {
     _emitEvent(QueueEventType.queueEnd);
   }
 
-  /// to add node into queue
+  /// to add node into queue, respecting priority order
+  ///
+  /// Higher priority values are placed closer to the front.
+  /// If the queue is running, the currently executing node (_first) is skipped.
   void _enqueue(AsyncNode node) {
     if (_first == null) {
       _first = node;
       _last = node;
-    } else {
+    } else if (node.priority <= _last!.priority) {
+      // Fast path: lowest or equal priority goes to end
       _last!.next = node;
       _last = node;
+    } else {
+      // Insert by priority, but never before the currently running node
+      AsyncNode? prev = _isRunning ? _first : null;
+      AsyncNode? current = _isRunning ? _first!.next : _first;
+
+      if (!_isRunning && node.priority > _first!.priority) {
+        // Insert before _first (queue not running)
+        node.next = _first;
+        _first = node;
+      } else {
+        while (current != null && current.priority >= node.priority) {
+          prev = current;
+          current = current.next;
+        }
+        node.next = current;
+        prev!.next = node;
+        if (current == null) {
+          _last = node;
+        }
+      }
     }
     _size++;
 

@@ -5,7 +5,7 @@ abstract class AsyncQueueInterface {
   void stop([Function? callBack]);
   void clear([Function? callBack]);
   void retry();
-  Future<dynamic> addJob(AsyncJob job, {Object? label, String? description, int retryTime});
-  Future<dynamic> addJobThrow(AsyncJob job, {Object? label, String? description, int retryTime});
+  Future<dynamic> addJob(AsyncJob job, {Object? label, String? description, int retryTime, int priority});
+  Future<dynamic> addJobThrow(AsyncJob job, {Object? label, String? description, int retryTime, int priority});
   Future<void> start();
 }

@@ -28,6 +28,7 @@ class AsyncNode {
   final int maxRetry;
   final Object label;
   final String? description;
+  final int priority;
   final Completer<dynamic> completer = Completer<dynamic>();
 
   AsyncNode? next;
@@ -42,6 +43,7 @@ class AsyncNode {
     required this.label,
     this.description,
     this.maxRetry = 1,
+    this.priority = 0,
   }) : _job = job {
     // Prevent unhandled error if the future is never awaited
     completer.future.ignore();
@@ -54,6 +56,6 @@ class AsyncNode {
 
   @override
   String toString() {
-    return 'AsyncNode(maxRetry: $maxRetry, label: $label, description: $description, retryCount: $retryCount)';
+    return 'AsyncNode(maxRetry: $maxRetry, label: $label, description: $description, priority: $priority, retryCount: $retryCount)';
   }
 }
