@@ -42,7 +42,10 @@ class AsyncNode {
     required this.label,
     this.description,
     this.maxRetry = 1,
-  }) : _job = job;
+  }) : _job = job {
+    // Prevent unhandled error if the future is never awaited
+    completer.future.ignore();
+  }
 
   dynamic run(PreviousResult previousResult) async {
     state = JobState.running;

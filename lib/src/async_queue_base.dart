@@ -33,6 +33,10 @@ class AsyncQueue extends AsyncQueueInterface {
   /// [allowDuplicate] must be false
   final bool throwIfDuplicate;
 
+  /// Called when a job throws an exception.
+  /// Receives the error and the job's label.
+  final QueueErrorHandler? onError;
+
   /// initialize normal queue
   ///
   /// which require user to explicitly call [start()]
@@ -40,6 +44,7 @@ class AsyncQueue extends AsyncQueueInterface {
   AsyncQueue({
     this.allowDuplicate = true,
     this.throwIfDuplicate = false,
+    this.onError,
   }) : assert(throwIfDuplicate ? !allowDuplicate : true);
 
   /// initialize auto queue
@@ -49,10 +54,12 @@ class AsyncQueue extends AsyncQueueInterface {
   factory AsyncQueue.autoStart({
     bool? allowDuplicate,
     bool? throwIfDuplicate,
+    QueueErrorHandler? onError,
   }) =>
       AsyncQueue(
         allowDuplicate: allowDuplicate ?? true,
         throwIfDuplicate: throwIfDuplicate ?? false,
+        onError: onError,
       ).._autoRun = true;
 
   /// Queue listener, emit event that indicate state of the queue
@@ -252,12 +259,28 @@ class AsyncQueue extends AsyncQueueInterface {
       if (_first == null) return;
 
       _emitEvent(QueueEventType.jobError, _first!.label);
+      onError?.call(e, _first!.label);
       retry();
 
-      // complete with error if retry limit reached
-      if (_first!.state == JobState.failed &&
-          !currentNode.completer.isCompleted) {
-        currentNode.completer.completeError(e);
+      // remove node from queue if retry limit reached
+      if (_first!.state == JobState.failed) {
+        if (!currentNode.completer.isCompleted) {
+          currentNode.completer.completeError(e);
+        }
+        if (_size == 1) {
+          _first = null;
+          _last = null;
+        } else {
+          _first = currentNode.next;
+          currentNode.next = null;
+        }
+        if (_map.containsKey(jobLabel)) {
+          _map.remove(jobLabel);
+        }
+        _size--;
+        _emitEvent(QueueEventType.afterJob, currentNode.label);
+      } else {
+        _emitEvent(QueueEventType.retryJob, currentNode.label);
       }
 
       _currentJobUpdater?.call(null);

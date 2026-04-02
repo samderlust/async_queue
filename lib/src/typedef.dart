@@ -9,3 +9,4 @@ typedef PreviousResult = dynamic;
 typedef AsyncJob = Function(PreviousResult previousResult);
 typedef QueueListener = Function(QueueEvent event);
 typedef CurrentJobUpdater = Function(Object? jobLabel);
+typedef QueueErrorHandler = Function(Object error, Object? jobLabel);
