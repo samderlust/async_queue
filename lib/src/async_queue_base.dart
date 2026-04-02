@@ -172,6 +172,7 @@ class AsyncQueue extends AsyncQueueInterface {
     String? description,
     int retryTime = 1,
     int priority = 0,
+    Duration? retryDelay,
   }) {
     if (isClosed) {
       _emitEvent(QueueEventType.violateAddWhenClosed);
@@ -184,6 +185,7 @@ class AsyncQueue extends AsyncQueueInterface {
       label: label ?? DateTime.now().toIso8601String(),
       description: description,
       priority: priority,
+      retryDelay: retryDelay,
     );
 
     if (_map.containsKey(newNode.label)) {
@@ -219,6 +221,7 @@ class AsyncQueue extends AsyncQueueInterface {
     String? description,
     int retryTime = 1,
     int priority = 0,
+    Duration? retryDelay,
   }) {
     if (isClosed) {
       throw ClosedQueueException("Closed Queue");
@@ -229,6 +232,7 @@ class AsyncQueue extends AsyncQueueInterface {
       label: label,
       description: description,
       priority: priority,
+      retryDelay: retryDelay,
     );
   }
 
@@ -333,6 +337,9 @@ class AsyncQueue extends AsyncQueueInterface {
         _emitEvent(QueueEventType.afterJob, currentNode.label);
       } else {
         _emitEvent(QueueEventType.retryJob, currentNode.label);
+        if (currentNode.retryDelay != null) {
+          await Future.delayed(currentNode.retryDelay!);
+        }
       }
 
       _currentJobUpdater?.call(null);
@@ -365,6 +372,9 @@ class AsyncQueue extends AsyncQueueInterface {
       _emitEvent(QueueEventType.afterJob, currentNode.label);
     } else {
       _emitEvent(QueueEventType.retryJob, currentNode.label);
+      if (currentNode.retryDelay != null) {
+        await Future.delayed(currentNode.retryDelay!);
+      }
     }
     _currentJobUpdater?.call(null);
   }

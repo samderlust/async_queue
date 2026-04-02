@@ -29,6 +29,7 @@ class AsyncNode {
   final Object label;
   final String? description;
   final int priority;
+  final Duration? retryDelay;
   final Completer<dynamic> completer = Completer<dynamic>();
 
   AsyncNode? next;
@@ -44,6 +45,7 @@ class AsyncNode {
     this.description,
     this.maxRetry = 1,
     this.priority = 0,
+    this.retryDelay,
   }) : _job = job {
     // Prevent unhandled error if the future is never awaited
     completer.future.ignore();
