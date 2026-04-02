@@ -18,6 +18,7 @@ class AsyncQueue extends AsyncQueueInterface {
   QueueListener? _listener;
   bool _isClosed = false;
   bool _isForcedStop = false;
+  bool _isPaused = false;
   final Map<Object, int> _map = {};
   dynamic _previousResult;
 
@@ -76,6 +77,9 @@ class AsyncQueue extends AsyncQueueInterface {
   /// true if the queue is closed, no more job can be added
   bool get isClosed => _isClosed;
 
+  /// true if the queue is paused
+  bool get isPaused => _isPaused;
+
   /// close the queue so that no more job can be added
   @override
   void close() {
@@ -101,6 +105,22 @@ class AsyncQueue extends AsyncQueueInterface {
     _previousResult = null;
 
     _emitEvent(QueueEventType.queueStopped);
+  }
+
+  /// Pause the queue. The currently running job will finish,
+  /// but no new jobs will start until [resume] is called.
+  /// Queued jobs are preserved.
+  void pause() {
+    _isPaused = true;
+    _emitEvent(QueueEventType.queuePaused);
+  }
+
+  /// Resume a paused queue. Continues processing remaining jobs.
+  void resume() {
+    if (!_isPaused) return;
+    _isPaused = false;
+    _emitEvent(QueueEventType.queueResumed);
+    if (_autoRun && size > 0) start();
   }
 
   /// stop the queue and clear the history
@@ -222,6 +242,10 @@ class AsyncQueue extends AsyncQueueInterface {
 
     while (size > 0) {
       if (_isForcedStop) break;
+      if (_isPaused) {
+        _isRunning = false;
+        return;
+      }
       await _dequeue();
     }
 

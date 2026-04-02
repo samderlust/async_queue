@@ -52,5 +52,11 @@ enum QueueEventType {
   retryLimitReached,
 
   /// emit when a job throws an exception
-  jobError
+  jobError,
+
+  /// when queue is paused
+  queuePaused,
+
+  /// when queue is resumed
+  queueResumed
 }
