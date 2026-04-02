@@ -77,6 +77,9 @@ class AsyncQueue extends AsyncQueueInterface {
   /// true if the queue is closed, no more job can be added
   bool get isClosed => _isClosed;
 
+  /// true if the queue is currently processing jobs
+  bool get isRunning => _isRunning;
+
   /// true if the queue is paused
   bool get isPaused => _isPaused;
 
