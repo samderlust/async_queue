@@ -4,6 +4,17 @@
 
 This dart package ensures your pack of async tasks executes in order, one after the other.
 
+## What's new in v3.0.0
+
+- **`addJob` returns a `Future`** — await individual job results directly, no more listener workarounds
+- **Automatic retry on exceptions** — jobs that throw are retried up to `retryTime` without manual `retry()` calls
+- **`onError` callback** — handle errors at the queue level: `AsyncQueue(onError: (error, label) { ... })`
+- **Priority queue** — `addJob(..., priority: 10)` to run important jobs first
+- **Pause / Resume** — `pause()` halts without losing jobs, `resume()` continues
+- **Retry with delay** — `addJob(..., retryDelay: Duration(seconds: 2))` to wait between retries
+- **Job timeout** — `addJob(..., timeout: Duration(seconds: 30))` to auto-fail slow jobs
+- **State getters** — `isRunning`, `isPaused`, `isClosed`
+
 ## Features
 
 - (Normal Queue) Add multiple jobs into queue before firing
