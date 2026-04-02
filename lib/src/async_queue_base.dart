@@ -134,8 +134,8 @@ class AsyncQueue extends AsyncQueueInterface {
   ///
   /// [retryTime] set the time that this job should retry if failed, default to 1,
   /// set [retryTime] to `-1` will make it retry infinitely, until job is done "be careful what you wish for!"
-  /// setting [retryTime] does not make the job auto retry
-  /// you must explicitly call retry when adding job.
+  /// If a job throws an exception, it will automatically retry up to [retryTime] times.
+  /// You can also manually call [retry] from within a job for custom retry logic.
   /// [label] must be unique, this can be use to get the [AsyncNode] that contains the related job
   /// will throw [DuplicatedLabelException] if you the label is already in the queue
   /// [description] description for the job
@@ -183,7 +183,7 @@ class AsyncQueue extends AsyncQueueInterface {
   @override
   void addJobThrow(
     AsyncJob job, {
-    String? label,
+    Object? label,
     String? description,
     int retryTime = 1,
   }) {
@@ -242,7 +242,17 @@ class AsyncQueue extends AsyncQueueInterface {
 
     _emitEvent(QueueEventType.beforeJob, _first!.label);
 
-    _previousResult = await _first!.run(_previousResult);
+    try {
+      _previousResult = await _first!.run(_previousResult);
+    } catch (e) {
+      //incase [stop] is called inside job
+      if (_first == null) return;
+
+      _emitEvent(QueueEventType.jobError, _first!.label);
+      retry();
+      _currentJobUpdater?.call(null);
+      return;
+    }
 
     //incase [stop] is called
     if (_first == null) return;
