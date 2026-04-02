@@ -9,7 +9,14 @@ This dart package ensures your pack of async tasks executes in order, one after 
 - (Normal Queue) Add multiple jobs into queue before firing
 - (Auto Queue) Firing job as soon as any job is added to the queue
 - (Both) Option to add queue listener that emits events that happen in the queue
-- Retry when a job failed
+- Retry when a job failed with optional delay between retries
+- `addJob` returns a `Future` — await individual job results
+- Automatic retry on exceptions
+- `onError` callback for dedicated error handling
+- Priority-based job ordering
+- Pause / Resume without losing queued jobs
+- Per-job timeout
+- `isRunning` / `isPaused` / `isClosed` state getters
 
 ## Installing and import the library:
 
@@ -117,6 +124,52 @@ q.addJob((_) async {
   // if this throws, it will be retried automatically
   return await api.fetchData();
 }, retryTime: 3);
+```
+
+### onError callback (v3.0.0+)
+
+Handle errors at the queue level without parsing events:
+
+```dart
+final q = AsyncQueue(
+  onError: (error, jobLabel) {
+    print('Job $jobLabel failed: $error');
+  },
+);
+```
+
+### Priority (v3.0.0+)
+
+Higher priority jobs execute before lower priority ones. Default is 0. Same-priority jobs maintain FIFO order.
+
+```dart
+q.addJob((_) => lowPriorityTask(), priority: 1);
+q.addJob((_) => highPriorityTask(), priority: 10);  // runs first
+```
+
+### Pause / Resume (v3.0.0+)
+
+Unlike `stop()` which destroys the queue, `pause()` preserves all queued jobs:
+
+```dart
+q.pause();   // current job finishes, no new jobs start
+q.resume();  // picks up where it left off
+```
+
+### Retry with delay (v3.0.0+)
+
+Add a delay between retry attempts:
+
+```dart
+q.addJob((_) => callApi(), retryTime: 3, retryDelay: Duration(seconds: 2));
+```
+
+### Job timeout (v3.0.0+)
+
+Auto-fail a job if it exceeds a duration. Timed-out jobs trigger auto-retry like any other exception:
+
+```dart
+q.addJob((_) => slowTask(), timeout: Duration(seconds: 30));
 ```
 
 ### Tell queue to retry a job
