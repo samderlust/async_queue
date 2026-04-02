@@ -92,7 +92,6 @@ class AsyncQueue extends AsyncQueueInterface {
     _size = 0;
     _map.clear();
     _previousResult = null;
-    _isForcedStop = false;
 
     _emitEvent(QueueEventType.queueStopped);
   }
@@ -212,6 +211,7 @@ class AsyncQueue extends AsyncQueueInterface {
       await _dequeue();
     }
 
+    _isForcedStop = false;
     _isRunning = false;
     _previousResult = null;
     _emitEvent(QueueEventType.queueEnd);
@@ -292,22 +292,4 @@ class AsyncQueue extends AsyncQueueInterface {
   void _updateQueueMap(Object jobLabel) {
     _map.update(jobLabel, (value) => value + 1, ifAbsent: () => 1);
   }
-
-  /// get the list of job info of the queue
-  ///
-  /// this list still remain after the queue finished
-  /// call [clear] would clear this history, also stop the queue if it's still running
-  // @override
-  // List<JobInfo> list() {
-  //   return _map.values.toList();
-  // }
-
-  /// get job info of a specific job by its label
-  // @override
-  // JobInfo getJobInfo(String label) {
-  //   if (!_map.containsKey(label)) {
-  //     throw InvalidJobLabelException("No job with this label found");
-  //   }
-  //   return _map[label]!;
-  // }
 }

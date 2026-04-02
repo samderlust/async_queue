@@ -22,7 +22,6 @@ void main() {
         (_) => Future.delayed(const Duration(milliseconds: 200), () async {
               try {
                 jobRunCount++;
-                print(jobRunCount);
                 await asyncJobMayFailed(() => res.add(1));
               } catch (e) {
                 q.retry();
@@ -66,7 +65,6 @@ void main() {
 
   test('Default retry should be 1', () async {
     final q = AsyncQueue();
-    q.addQueueListener((event) => print(event));
     int jobCount = 0;
 
     q.addJob(
@@ -108,7 +106,6 @@ void main() {
         retryTime: -1);
 
     await q.start();
-    print(jobCount);
     expect(jobCount, failTime + 1);
     expect(retryCount, failTime);
   });
@@ -136,7 +133,6 @@ void main() {
         retryTime: -1);
 
     await q.start();
-    print(jobCount);
     expect(jobCount, 1);
     expect(retryCount, 0);
   });
