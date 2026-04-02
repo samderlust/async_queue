@@ -1,3 +1,19 @@
+## 2.1.0
+
+- fix post-increment bug in duplicate label tracking (value was never actually incremented)
+- fix null crash when `retry()` is called on an empty queue
+- fix `_previousResult` leaking across separate `start()` runs
+- add automatic retry on job exceptions — jobs that throw are now retried up to `retryTime` without needing to manually call `retry()`
+- add `QueueEventType.jobError` event emitted when a job throws an exception
+- fix `addJobThrow` label parameter type from `String?` to `Object?` to match `addJob`
+- sync `AsyncQueueInterface` signatures with actual implementation
+- remove dead commented-out code (`list()`, `getJobInfo()`) from source and interface
+- remove unused `dart:math` import and stray `print()` calls from tests
+- fix `_isForcedStop` flag now properly cleared after `start()` loop exits instead of immediately in `stop()`
+- clean up `async_queue_info_test.dart` with actual assertions instead of commented-out expects
+- add test coverage for `AsyncQueue.autoStart()` (execution order, late adds, events, stop)
+- add meaningful job label assertions in event tests
+
 ## 2.0.2
 
 - fix wrong job label on `QueueEventType.newJobAdded`

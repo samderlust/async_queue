@@ -92,7 +92,6 @@ class AsyncQueue extends AsyncQueueInterface {
     _size = 0;
     _map.clear();
     _previousResult = null;
-    _isForcedStop = false;
 
     _emitEvent(QueueEventType.queueStopped);
   }
@@ -109,6 +108,8 @@ class AsyncQueue extends AsyncQueueInterface {
   /// retry
   @override
   void retry() {
+    if (_first == null) return;
+
     if (_first!.maxRetry == -1) {
       _first!.state = JobState.pendingRetry;
       return;
@@ -132,8 +133,8 @@ class AsyncQueue extends AsyncQueueInterface {
   ///
   /// [retryTime] set the time that this job should retry if failed, default to 1,
   /// set [retryTime] to `-1` will make it retry infinitely, until job is done "be careful what you wish for!"
-  /// setting [retryTime] does not make the job auto retry
-  /// you must explicitly call retry when adding job.
+  /// If a job throws an exception, it will automatically retry up to [retryTime] times.
+  /// You can also manually call [retry] from within a job for custom retry logic.
   /// [label] must be unique, this can be use to get the [AsyncNode] that contains the related job
   /// will throw [DuplicatedLabelException] if you the label is already in the queue
   /// [description] description for the job
@@ -181,7 +182,7 @@ class AsyncQueue extends AsyncQueueInterface {
   @override
   void addJobThrow(
     AsyncJob job, {
-    String? label,
+    Object? label,
     String? description,
     int retryTime = 1,
   }) {
@@ -210,7 +211,9 @@ class AsyncQueue extends AsyncQueueInterface {
       await _dequeue();
     }
 
+    _isForcedStop = false;
     _isRunning = false;
+    _previousResult = null;
     _emitEvent(QueueEventType.queueEnd);
   }
 
@@ -239,7 +242,17 @@ class AsyncQueue extends AsyncQueueInterface {
 
     _emitEvent(QueueEventType.beforeJob, _first!.label);
 
-    _previousResult = await _first!.run(_previousResult);
+    try {
+      _previousResult = await _first!.run(_previousResult);
+    } catch (e) {
+      //incase [stop] is called inside job
+      if (_first == null) return;
+
+      _emitEvent(QueueEventType.jobError, _first!.label);
+      retry();
+      _currentJobUpdater?.call(null);
+      return;
+    }
 
     //incase [stop] is called
     if (_first == null) return;
@@ -277,24 +290,6 @@ class AsyncQueue extends AsyncQueueInterface {
   }
 
   void _updateQueueMap(Object jobLabel) {
-    _map.update(jobLabel, (value) => value++, ifAbsent: () => 1);
+    _map.update(jobLabel, (value) => value + 1, ifAbsent: () => 1);
   }
-
-  /// get the list of job info of the queue
-  ///
-  /// this list still remain after the queue finished
-  /// call [clear] would clear this history, also stop the queue if it's still running
-  // @override
-  // List<JobInfo> list() {
-  //   return _map.values.toList();
-  // }
-
-  /// get job info of a specific job by its label
-  // @override
-  // JobInfo getJobInfo(String label) {
-  //   if (!_map.containsKey(label)) {
-  //     throw InvalidJobLabelException("No job with this label found");
-  //   }
-  //   return _map[label]!;
-  // }
 }

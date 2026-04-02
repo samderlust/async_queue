@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:async_queue/src/async_queue_base.dart';
 import 'package:async_queue/src/exceptions.dart';
 import 'package:async_queue/src/queue_event.dart';
@@ -130,37 +128,113 @@ void main() {
 
     expect(q.size, 0);
   });
-  test('job should return correct job label', () async {
+  test('job should return correct job label in events', () async {
     final q = AsyncQueue();
-    q.addQueueListener(
-      (event) {
-        print("JOBLABEL ${event.type} - ${event.jobLabel} ");
-      },
-    );
+    final List<QueueEvent> events = [];
+    q.addQueueListener(events.add);
 
     q.addJob(
       label: 'job1',
-      (_) => Future.delayed(const Duration(milliseconds: 200), () {
-        print("run job1");
-      }),
+      (_) => Future.delayed(const Duration(milliseconds: 100)),
     );
 
     q.addJob(
       label: 'job2',
-      (_) => Future.delayed(const Duration(milliseconds: 300), () {
-        print("run job2");
-      }),
+      (_) => Future.delayed(const Duration(milliseconds: 100)),
     );
 
     q.addJob(
       label: 'job3',
-      (_) => Future.delayed(const Duration(milliseconds: 300), () {
-        print("run job3");
-      }),
+      (_) => Future.delayed(const Duration(milliseconds: 100)),
     );
 
     await q.start();
 
     expect(q.size, 0);
+
+    final beforeEvents =
+        events.where((e) => e.type == QueueEventType.beforeJob).toList();
+    expect(beforeEvents.map((e) => e.jobLabel), ['job1', 'job2', 'job3']);
+
+    final afterEvents =
+        events.where((e) => e.type == QueueEventType.afterJob).toList();
+    expect(afterEvents.map((e) => e.jobLabel), ['job1', 'job2', 'job3']);
+  });
+
+  group('AsyncQueue.autoStart', () {
+    test('jobs execute in order as they are added', () async {
+      final q = AsyncQueue.autoStart();
+      final List<int> res = [];
+
+      q.addJob((_) =>
+          Future.delayed(const Duration(milliseconds: 100), () => res.add(1)));
+      q.addJob((_) =>
+          Future.delayed(const Duration(milliseconds: 50), () => res.add(2)));
+      q.addJob((_) =>
+          Future.delayed(const Duration(milliseconds: 50), () => res.add(3)));
+
+      // wait for all jobs to finish
+      await Future.delayed(const Duration(milliseconds: 400));
+
+      expect(res, [1, 2, 3]);
+      expect(q.size, 0);
+    });
+
+    test('job added after all previous jobs complete still executes', () async {
+      final q = AsyncQueue.autoStart();
+      final List<int> res = [];
+
+      q.addJob((_) =>
+          Future.delayed(const Duration(milliseconds: 50), () => res.add(1)));
+
+      await Future.delayed(const Duration(milliseconds: 150));
+      expect(res, [1]);
+
+      q.addJob((_) =>
+          Future.delayed(const Duration(milliseconds: 50), () => res.add(2)));
+
+      await Future.delayed(const Duration(milliseconds: 150));
+      expect(res, [1, 2]);
+      expect(q.size, 0);
+    });
+
+    test('emits correct events', () async {
+      final q = AsyncQueue.autoStart();
+      final List<QueueEvent> events = [];
+      q.addQueueListener(events.add);
+
+      q.addJob(
+        label: 'auto1',
+        (_) => Future.delayed(const Duration(milliseconds: 50)),
+      );
+
+      await Future.delayed(const Duration(milliseconds: 150));
+
+      final types = events.map((e) => e.type).toList();
+      expect(types, contains(QueueEventType.newJobAdded));
+      expect(types, contains(QueueEventType.queueStart));
+      expect(types, contains(QueueEventType.beforeJob));
+      expect(types, contains(QueueEventType.afterJob));
+      expect(types, contains(QueueEventType.queueEnd));
+    });
+
+    test('stop cancels remaining jobs', () async {
+      final q = AsyncQueue.autoStart();
+      final List<int> res = [];
+
+      q.addJob((_) => Future.delayed(
+          const Duration(milliseconds: 100), () {
+        res.add(1);
+        q.stop();
+      }));
+      q.addJob((_) => Future.delayed(
+          const Duration(milliseconds: 100), () => res.add(2)));
+      q.addJob((_) => Future.delayed(
+          const Duration(milliseconds: 100), () => res.add(3)));
+
+      await Future.delayed(const Duration(milliseconds: 400));
+      expect(res, [1]);
+      expect(q.size, 0);
+    });
   });
 }
