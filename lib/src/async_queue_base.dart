@@ -109,6 +109,8 @@ class AsyncQueue extends AsyncQueueInterface {
   /// retry
   @override
   void retry() {
+    if (_first == null) return;
+
     if (_first!.maxRetry == -1) {
       _first!.state = JobState.pendingRetry;
       return;
@@ -211,6 +213,7 @@ class AsyncQueue extends AsyncQueueInterface {
     }
 
     _isRunning = false;
+    _previousResult = null;
     _emitEvent(QueueEventType.queueEnd);
   }
 
@@ -277,7 +280,7 @@ class AsyncQueue extends AsyncQueueInterface {
   }
 
   void _updateQueueMap(Object jobLabel) {
-    _map.update(jobLabel, (value) => value++, ifAbsent: () => 1);
+    _map.update(jobLabel, (value) => value + 1, ifAbsent: () => 1);
   }
 
   /// get the list of job info of the queue
