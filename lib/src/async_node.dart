@@ -30,6 +30,7 @@ class AsyncNode {
   final String? description;
   final int priority;
   final Duration? retryDelay;
+  final Duration? timeout;
   final Completer<dynamic> completer = Completer<dynamic>();
 
   AsyncNode? next;
@@ -46,6 +47,7 @@ class AsyncNode {
     this.maxRetry = 1,
     this.priority = 0,
     this.retryDelay,
+    this.timeout,
   }) : _job = job {
     // Prevent unhandled error if the future is never awaited
     completer.future.ignore();
@@ -53,6 +55,9 @@ class AsyncNode {
 
   dynamic run(PreviousResult previousResult) async {
     state = JobState.running;
+    if (timeout != null) {
+      return await Future(() => _job(previousResult)).timeout(timeout!);
+    }
     return await _job(previousResult);
   }
 

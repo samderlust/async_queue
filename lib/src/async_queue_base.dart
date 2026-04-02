@@ -176,6 +176,7 @@ class AsyncQueue extends AsyncQueueInterface {
     int retryTime = 1,
     int priority = 0,
     Duration? retryDelay,
+    Duration? timeout,
   }) {
     if (isClosed) {
       _emitEvent(QueueEventType.violateAddWhenClosed);
@@ -189,6 +190,7 @@ class AsyncQueue extends AsyncQueueInterface {
       description: description,
       priority: priority,
       retryDelay: retryDelay,
+      timeout: timeout,
     );
 
     if (_map.containsKey(newNode.label)) {
@@ -225,6 +227,7 @@ class AsyncQueue extends AsyncQueueInterface {
     int retryTime = 1,
     int priority = 0,
     Duration? retryDelay,
+    Duration? timeout,
   }) {
     if (isClosed) {
       throw ClosedQueueException("Closed Queue");
@@ -236,6 +239,7 @@ class AsyncQueue extends AsyncQueueInterface {
       description: description,
       priority: priority,
       retryDelay: retryDelay,
+      timeout: timeout,
     );
   }
 
