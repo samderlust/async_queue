@@ -19,10 +19,9 @@ void main() {
     final List<int> res = [];
 
     q.addJob(
-        () => Future.delayed(const Duration(milliseconds: 200), () async {
+        (_) => Future.delayed(const Duration(milliseconds: 200), () async {
               try {
                 jobRunCount++;
-                print(jobRunCount);
                 await asyncJobMayFailed(() => res.add(1));
               } catch (e) {
                 q.retry();
@@ -31,7 +30,7 @@ void main() {
         retryTime: 1);
 
     q.addJob(
-      () => Future.delayed(const Duration(milliseconds: 200), () {
+      (_) => Future.delayed(const Duration(milliseconds: 200), () {
         jobRunCount++;
         res.add(2);
       }),
@@ -49,7 +48,7 @@ void main() {
     int jobCount = 0;
 
     q.addJob(
-        () => Future.delayed(const Duration(milliseconds: 200), () async {
+        (_) => Future.delayed(const Duration(milliseconds: 200), () async {
               try {
                 jobCount++;
                 throw Exception('error');
@@ -66,11 +65,10 @@ void main() {
 
   test('Default retry should be 1', () async {
     final q = AsyncQueue();
-    q.addQueueListener((event) => print(event));
     int jobCount = 0;
 
     q.addJob(
-      () => Future.delayed(const Duration(milliseconds: 200), () async {
+      (_) => Future.delayed(const Duration(milliseconds: 200), () async {
         try {
           jobCount++;
           throw Exception('error');
@@ -91,7 +89,7 @@ void main() {
     final failTime = 12;
 
     q.addJob(
-        () => Future.delayed(
+        (_) => Future.delayed(
               const Duration(milliseconds: 100),
               () async {
                 try {
@@ -108,7 +106,6 @@ void main() {
         retryTime: -1);
 
     await q.start();
-    print(jobCount);
     expect(jobCount, failTime + 1);
     expect(retryCount, failTime);
   });
@@ -120,7 +117,7 @@ void main() {
     final failTime = 12;
 
     q.addJob(
-        () => Future.delayed(
+        (_) => Future.delayed(
               const Duration(milliseconds: 100),
               () async {
                 try {
@@ -136,7 +133,6 @@ void main() {
         retryTime: -1);
 
     await q.start();
-    print(jobCount);
     expect(jobCount, 1);
     expect(retryCount, 0);
   });

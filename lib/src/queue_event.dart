@@ -6,7 +6,7 @@ class QueueEvent {
   final DateTime time = DateTime.now();
   final int currentQueueSize;
   final QueueEventType type;
-  final String? jobLabel;
+  final Object? jobLabel;
 
   QueueEvent({
     required this.currentQueueSize,
@@ -49,5 +49,14 @@ enum QueueEventType {
   retryJob,
 
   /// emit when a job has reach it retry limit
-  retryLimitReached
+  retryLimitReached,
+
+  /// emit when a job throws an exception
+  jobError,
+
+  /// when queue is paused
+  queuePaused,
+
+  /// when queue is resumed
+  queueResumed
 }

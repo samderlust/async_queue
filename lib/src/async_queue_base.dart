@@ -1,8 +1,7 @@
-import 'package:async_queue/src/interfaces.dart';
 import 'package:async_queue/src/exceptions.dart';
+import 'package:async_queue/src/interfaces.dart';
 
 import 'async_node.dart';
-import 'job_info.dart';
 import 'queue_event.dart';
 import 'typedef.dart';
 
@@ -18,23 +17,57 @@ class AsyncQueue extends AsyncQueueInterface {
   bool _isRunning = false;
   QueueListener? _listener;
   bool _isClosed = false;
-  bool _isForcedClosed = false;
-  final Map<String, JobInfo> _map = {};
+  bool _isForcedStop = false;
+  bool _isPaused = false;
+  final Map<Object, int> _map = {};
+  dynamic _previousResult;
+
+  CurrentJobUpdater? _currentJobUpdater;
+
+  /// allow to add multiple jobs with same label
+  ///
+  /// label is required id you want to check job exists correctly
+  final bool allowDuplicate;
+
+  /// throw [DuplicatedLabelException] if duplicated job added
+  ///
+  /// [allowDuplicate] must be false
+  final bool throwIfDuplicate;
+
+  /// Called when a job throws an exception.
+  /// Receives the error and the job's label.
+  final QueueErrorHandler? onError;
 
   /// initialize normal queue
   ///
   /// which require user to explicitly call [start()]
   /// in order to execute all the jobs in the queue
-  AsyncQueue();
+  AsyncQueue({
+    this.allowDuplicate = true,
+    this.throwIfDuplicate = false,
+    this.onError,
+  }) : assert(throwIfDuplicate ? !allowDuplicate : true);
 
   /// initialize auto queue
   ///
   /// which will execute the job when it added into the queue
   /// if there is an executing job, the new will have to wait for its turn
-  factory AsyncQueue.autoStart() => AsyncQueue().._autoRun = true;
+  factory AsyncQueue.autoStart({
+    bool? allowDuplicate,
+    bool? throwIfDuplicate,
+    QueueErrorHandler? onError,
+  }) =>
+      AsyncQueue(
+        allowDuplicate: allowDuplicate ?? true,
+        throwIfDuplicate: throwIfDuplicate ?? false,
+        onError: onError,
+      ).._autoRun = true;
 
   /// Queue listener, emit event that indicate state of the queue
   void addQueueListener(QueueListener listener) => _listener = listener;
+
+  void currentJobUpdate(CurrentJobUpdater updater) =>
+      _currentJobUpdater = updater;
 
   /// current size of the queue
   ///
@@ -43,6 +76,12 @@ class AsyncQueue extends AsyncQueueInterface {
 
   /// true if the queue is closed, no more job can be added
   bool get isClosed => _isClosed;
+
+  /// true if the queue is currently processing jobs
+  bool get isRunning => _isRunning;
+
+  /// true if the queue is paused
+  bool get isPaused => _isPaused;
 
   /// close the queue so that no more job can be added
   @override
@@ -58,13 +97,33 @@ class AsyncQueue extends AsyncQueueInterface {
   @override
   void stop([Function? callBack]) {
     if (callBack != null) callBack();
-    _isForcedClosed = true;
+    _currentJobUpdater?.call(null);
+
+    _isForcedStop = true;
     _isRunning = false;
     _first = null;
     _last = null;
     _size = 0;
     _map.clear();
+    _previousResult = null;
+
     _emitEvent(QueueEventType.queueStopped);
+  }
+
+  /// Pause the queue. The currently running job will finish,
+  /// but no new jobs will start until [resume] is called.
+  /// Queued jobs are preserved.
+  void pause() {
+    _isPaused = true;
+    _emitEvent(QueueEventType.queuePaused);
+  }
+
+  /// Resume a paused queue. Continues processing remaining jobs.
+  void resume() {
+    if (!_isPaused) return;
+    _isPaused = false;
+    _emitEvent(QueueEventType.queueResumed);
+    if (_autoRun && size > 0) start();
   }
 
   /// stop the queue and clear the history
@@ -79,43 +138,49 @@ class AsyncQueue extends AsyncQueueInterface {
   /// retry
   @override
   void retry() {
+    if (_first == null) return;
+
     if (_first!.maxRetry == -1) {
       _first!.state = JobState.pendingRetry;
-      _updateQueueMap(_first!.info);
       return;
     }
 
     if (_first!.retryCount >= _first!.maxRetry) {
       _emitEvent(QueueEventType.retryLimitReached, _first!.label);
       _first!.state = JobState.failed;
-      _updateQueueMap(_first!.info);
 
       return;
     }
 
     _first!.retryCount++;
     _first!.state = JobState.pendingRetry;
-    _updateQueueMap(_first!.info);
   }
 
   /// Add new job into the queue
   ///
+  /// [AsyncJob] (Function(PreviousResult dynamic) job) will provide previous job's result to use in the next job if you wish to use,
+  /// otherwise just ignore it using `_`.
+  ///
   /// [retryTime] set the time that this job should retry if failed, default to 1,
   /// set [retryTime] to `-1` will make it retry infinitely, until job is done "be careful what you wish for!"
-  /// setting [retryTime] does not make the job auto retry
-  /// you must explicitly call retry when adding job.
+  /// If a job throws an exception, it will automatically retry up to [retryTime] times.
+  /// You can also manually call [retry] from within a job for custom retry logic.
   /// [label] must be unique, this can be use to get the [AsyncNode] that contains the related job
   /// will throw [DuplicatedLabelException] if you the label is already in the queue
   /// [description] description for the job
   @override
-  void addJob(
+  Future<dynamic> addJob(
     AsyncJob job, {
-    String? label,
+    Object? label,
     String? description,
     int retryTime = 1,
+    int priority = 0,
+    Duration? retryDelay,
+    Duration? timeout,
   }) {
     if (isClosed) {
-      return _emitEvent(QueueEventType.violateAddWhenClosed);
+      _emitEvent(QueueEventType.violateAddWhenClosed);
+      return Future.value(null);
     }
 
     final newNode = AsyncNode(
@@ -123,37 +188,59 @@ class AsyncQueue extends AsyncQueueInterface {
       maxRetry: retryTime,
       label: label ?? DateTime.now().toIso8601String(),
       description: description,
+      priority: priority,
+      retryDelay: retryDelay,
+      timeout: timeout,
     );
 
     if (_map.containsKey(newNode.label)) {
-      throw DuplicatedLabelException("A job with this label already exists");
+      if (allowDuplicate) {
+        _updateQueueMap(newNode.label);
+        _enqueue(newNode);
+      } else {
+        if (throwIfDuplicate) {
+          throw DuplicatedLabelException(
+            "A job with this label already exists",
+          );
+        }
+        return Future.value(null);
+      }
+    } else {
+      _enqueue(newNode);
+
+      _updateQueueMap(newNode.label);
     }
-    _map[newNode.label] = newNode.info;
-    _enqueue(newNode);
 
     if (_autoRun) start();
+
+    return newNode.future;
   }
 
   /// Add new job in to the queue
   ///
   /// if the queue is closed, throw [ClosedQueueException]
   @override
-  void addJobThrow(
+  Future<dynamic> addJobThrow(
     AsyncJob job, {
-    String? label,
+    Object? label,
     String? description,
     int retryTime = 1,
+    int priority = 0,
+    Duration? retryDelay,
+    Duration? timeout,
   }) {
     if (isClosed) {
       throw ClosedQueueException("Closed Queue");
-    } else {
-      addJob(
-        job,
-        retryTime: retryTime,
-        label: label,
-        description: description,
-      );
     }
+    return addJob(
+      job,
+      retryTime: retryTime,
+      label: label,
+      description: description,
+      priority: priority,
+      retryDelay: retryDelay,
+      timeout: timeout,
+    );
   }
 
   /// to start the execution of jobs in queue
@@ -165,26 +252,56 @@ class AsyncQueue extends AsyncQueueInterface {
     _emitEvent(QueueEventType.queueStart);
 
     while (size > 0) {
-      if (_isForcedClosed) break;
+      if (_isForcedStop) break;
+      if (_isPaused) {
+        _isRunning = false;
+        return;
+      }
       await _dequeue();
     }
 
+    _isForcedStop = false;
     _isRunning = false;
+    _previousResult = null;
     _emitEvent(QueueEventType.queueEnd);
   }
 
-  /// to add node into queue
+  /// to add node into queue, respecting priority order
+  ///
+  /// Higher priority values are placed closer to the front.
+  /// If the queue is running, the currently executing node (_first) is skipped.
   void _enqueue(AsyncNode node) {
     if (_first == null) {
       _first = node;
       _last = node;
-    } else {
+    } else if (node.priority <= _last!.priority) {
+      // Fast path: lowest or equal priority goes to end
       _last!.next = node;
       _last = node;
+    } else {
+      // Insert by priority, but never before the currently running node
+      AsyncNode? prev = _isRunning ? _first : null;
+      AsyncNode? current = _isRunning ? _first!.next : _first;
+
+      if (!_isRunning && node.priority > _first!.priority) {
+        // Insert before _first (queue not running)
+        node.next = _first;
+        _first = node;
+      } else {
+        while (current != null && current.priority >= node.priority) {
+          prev = current;
+          current = current.next;
+        }
+        node.next = current;
+        prev!.next = node;
+        if (current == null) {
+          _last = node;
+        }
+      }
     }
     _size++;
 
-    _emitEvent(QueueEventType.newJobAdded, _first!.label);
+    _emitEvent(QueueEventType.newJobAdded, node.label);
   }
 
   /// remove node, execute job
@@ -192,12 +309,49 @@ class AsyncQueue extends AsyncQueueInterface {
     if (_first == null) return;
     final jobLabel = _first!.label;
 
+    _currentJobUpdater?.call(jobLabel);
+
     var currentNode = _first!;
 
     _emitEvent(QueueEventType.beforeJob, _first!.label);
 
-    _updateQueueMap(_first!.info.copyWith(state: JobState.running));
-    await _first!.run();
+    try {
+      _previousResult = await _first!.run(_previousResult);
+    } catch (e) {
+      //incase [stop] is called inside job
+      if (_first == null) return;
+
+      _emitEvent(QueueEventType.jobError, _first!.label);
+      onError?.call(e, _first!.label);
+      retry();
+
+      // remove node from queue if retry limit reached
+      if (_first!.state == JobState.failed) {
+        if (!currentNode.completer.isCompleted) {
+          currentNode.completer.completeError(e);
+        }
+        if (_size == 1) {
+          _first = null;
+          _last = null;
+        } else {
+          _first = currentNode.next;
+          currentNode.next = null;
+        }
+        if (_map.containsKey(jobLabel)) {
+          _map.remove(jobLabel);
+        }
+        _size--;
+        _emitEvent(QueueEventType.afterJob, currentNode.label);
+      } else {
+        _emitEvent(QueueEventType.retryJob, currentNode.label);
+        if (currentNode.retryDelay != null) {
+          await Future.delayed(currentNode.retryDelay!);
+        }
+      }
+
+      _currentJobUpdater?.call(null);
+      return;
+    }
 
     //incase [stop] is called
     if (_first == null) return;
@@ -207,7 +361,9 @@ class AsyncQueue extends AsyncQueueInterface {
     }
 
     if (_first!.state == JobState.done || _first!.state == JobState.failed) {
-      _updateQueueMap(_first!.info);
+      if (!currentNode.completer.isCompleted) {
+        currentNode.completer.complete(_previousResult);
+      }
       if (_size == 1) {
         _first = null;
         _last = null;
@@ -215,46 +371,30 @@ class AsyncQueue extends AsyncQueueInterface {
         _first = currentNode.next;
         currentNode.next = null;
       }
+      //remove job from info map
+      if (_map.containsKey(jobLabel)) {
+        _map.remove(jobLabel);
+      }
       _size--;
-      _emitEvent(QueueEventType.afterJob, jobLabel);
+      _emitEvent(QueueEventType.afterJob, currentNode.label);
     } else {
-      _emitEvent(QueueEventType.retryJob, jobLabel);
+      _emitEvent(QueueEventType.retryJob, currentNode.label);
+      if (currentNode.retryDelay != null) {
+        await Future.delayed(currentNode.retryDelay!);
+      }
     }
+    _currentJobUpdater?.call(null);
   }
 
-  void _emitEvent(QueueEventType type, [String? label]) {
-    if (_listener != null) {
-      _listener!(QueueEvent(
-        currentQueueSize: _size,
-        type: type,
-        jobLabel: label,
-      ));
-    }
+  void _emitEvent(QueueEventType type, [Object? label]) {
+    _listener?.call(QueueEvent(
+      currentQueueSize: _size,
+      type: type,
+      jobLabel: label,
+    ));
   }
 
-  void _updateQueueMap(
-    JobInfo info,
-  ) {
-    if (_map.containsKey(info.label)) {
-      _map.update(info.label, (value) => info);
-    }
-  }
-
-  /// get the list of job info of the queue
-  ///
-  /// this list still remain after the queue finished
-  /// call [clear] would clear this history, also stop the queue if it's still running
-  @override
-  List<JobInfo> list() {
-    return _map.values.toList();
-  }
-
-  /// get job info of a specific job by its label
-  @override
-  JobInfo getJobInfo(String label) {
-    if (!_map.containsKey(label)) {
-      throw InvalidJobLabelException("No job with this label found");
-    }
-    return _map[label]!;
+  void _updateQueueMap(Object jobLabel) {
+    _map.update(jobLabel, (value) => value + 1, ifAbsent: () => 1);
   }
 }

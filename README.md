@@ -4,12 +4,30 @@
 
 This dart package ensures your pack of async tasks executes in order, one after the other.
 
+## What's new in v3.0.0
+
+- **`addJob` returns a `Future`** — await individual job results directly, no more listener workarounds
+- **Automatic retry on exceptions** — jobs that throw are retried up to `retryTime` without manual `retry()` calls
+- **`onError` callback** — handle errors at the queue level: `AsyncQueue(onError: (error, label) { ... })`
+- **Priority queue** — `addJob(..., priority: 10)` to run important jobs first
+- **Pause / Resume** — `pause()` halts without losing jobs, `resume()` continues
+- **Retry with delay** — `addJob(..., retryDelay: Duration(seconds: 2))` to wait between retries
+- **Job timeout** — `addJob(..., timeout: Duration(seconds: 30))` to auto-fail slow jobs
+- **State getters** — `isRunning`, `isPaused`, `isClosed`
+
 ## Features
 
 - (Normal Queue) Add multiple jobs into queue before firing
 - (Auto Queue) Firing job as soon as any job is added to the queue
 - (Both) Option to add queue listener that emits events that happen in the queue
-- Retry when a job failed
+- Retry when a job failed with optional delay between retries
+- `addJob` returns a `Future` — await individual job results
+- Automatic retry on exceptions
+- `onError` callback for dedicated error handling
+- Priority-based job ordering
+- Pause / Resume without losing queued jobs
+- Per-job timeout
+- `isRunning` / `isPaused` / `isClosed` state getters
 
 ## Installing and import the library:
 
@@ -32,13 +50,13 @@ import 'package:async_queue/async_queue.dart';
 
 ```
  final asyncQ = AsyncQueue();
-  asyncQ.addJob(() =>
+  asyncQ.addJob((_) =>
       Future.delayed(const Duration(seconds: 1), () => print("normalQ: 1")));
-  asyncQ.addJob(() =>
+  asyncQ.addJob((_) =>
       Future.delayed(const Duration(seconds: 4), () => print("normalQ: 2")));
-  asyncQ.addJob(() =>
+  asyncQ.addJob((_) =>
       Future.delayed(const Duration(seconds: 2), () => print("normalQ: 3")));
-  asyncQ.addJob(() =>
+  asyncQ.addJob((_) =>
       Future.delayed(const Duration(seconds: 1), () => print("normalQ: 4")));
 
   await asyncQ.start();
@@ -49,25 +67,25 @@ import 'package:async_queue/async_queue.dart';
     // normalQ: 4
 ```
 
-### 2. Auto Star Queue
+### 2. Auto Start Queue
 
 ```
 final autoAsyncQ = AsyncQueue.autoStart();
 
-  autoAsyncQ.addJob(() =>
+  autoAsyncQ.addJob((_) =>
       Future.delayed(const Duration(seconds: 1), () => print("AutoQ: 1")));
   await Future.delayed(const Duration(seconds: 6));
-  autoAsyncQ.addJob(() =>
+  autoAsyncQ.addJob((_) =>
       Future.delayed(const Duration(seconds: 0), () => print("AutoQ: 1.2")));
-  autoAsyncQ.addJob(() =>
+  autoAsyncQ.addJob((_) =>
       Future.delayed(const Duration(seconds: 0), () => print("AutoQ: 1.3")));
-  autoAsyncQ.addJob(() =>
+  autoAsyncQ.addJob((_) =>
       Future.delayed(const Duration(seconds: 4), () => print("AutoQ: 2")));
-  autoAsyncQ.addJob(() =>
+  autoAsyncQ.addJob((_) =>
       Future.delayed(const Duration(seconds: 3), () => print("AutoQ: 2.2")));
-  autoAsyncQ.addJob(() =>
+  autoAsyncQ.addJob((_) =>
       Future.delayed(const Duration(seconds: 2), () => print("AutoQ: 3")));
-  autoAsyncQ.addJob(() =>
+  autoAsyncQ.addJob((_) =>
       Future.delayed(const Duration(seconds: 1), () => print("AutoQ: 4")));
 
     // AutoQ: 1
@@ -85,6 +103,84 @@ final autoAsyncQ = AsyncQueue.autoStart();
   final asyncQ = AsyncQueue();
 
   asyncQ.addQueueListener((event) => print("$event"));
+```
+
+### Await job result (v3.0.0+)
+
+`addJob` returns a `Future` that completes with the job's return value. This works alongside `previousResult` — they serve different purposes.
+
+```dart
+final q = AsyncQueue.autoStart();
+
+// Each addJob returns a Future you can await for its result
+final userFuture = q.addJob((_) async {
+  return await api.getUser();  // returns "Sam"
+});
+
+// previousResult still chains between jobs
+final postsFuture = q.addJob((previousResult) async {
+  return await api.getPostsFor(previousResult);
+});
+
+final user = await userFuture;     // "Sam"
+final posts = await postsFuture;   // [Post, Post, ...]
+```
+
+### Automatic retry on exceptions (v3.0.0+)
+
+Jobs that throw are automatically retried up to `retryTime` times. You no longer need to catch errors and call `retry()` manually (though you still can for custom logic).
+
+```dart
+q.addJob((_) async {
+  // if this throws, it will be retried automatically
+  return await api.fetchData();
+}, retryTime: 3);
+```
+
+### onError callback (v3.0.0+)
+
+Handle errors at the queue level without parsing events:
+
+```dart
+final q = AsyncQueue(
+  onError: (error, jobLabel) {
+    print('Job $jobLabel failed: $error');
+  },
+);
+```
+
+### Priority (v3.0.0+)
+
+Higher priority jobs execute before lower priority ones. Default is 0. Same-priority jobs maintain FIFO order.
+
+```dart
+q.addJob((_) => lowPriorityTask(), priority: 1);
+q.addJob((_) => highPriorityTask(), priority: 10);  // runs first
+```
+
+### Pause / Resume (v3.0.0+)
+
+Unlike `stop()` which destroys the queue, `pause()` preserves all queued jobs:
+
+```dart
+q.pause();   // current job finishes, no new jobs start
+q.resume();  // picks up where it left off
+```
+
+### Retry with delay (v3.0.0+)
+
+Add a delay between retry attempts:
+
+```dart
+q.addJob((_) => callApi(), retryTime: 3, retryDelay: Duration(seconds: 2));
+```
+
+### Job timeout (v3.0.0+)
+
+Auto-fail a job if it exceeds a duration. Timed-out jobs trigger auto-retry like any other exception:
+
+```dart
+q.addJob((_) => slowTask(), timeout: Duration(seconds: 30));
 ```
 
 ### Tell queue to retry a job
@@ -121,15 +217,15 @@ Code example:
       body: Column(
         children: [
           TextButton(
-            onPressed: () async {aQ.addJob(() => Future.delayed(const Duration(seconds: 2), () => print("job1 ")));},
+            onPressed: () async {aQ.addJob((_) => Future.delayed(const Duration(seconds: 2), () => print("job1 ")));},
             child: const Text('job1'),
           ),
           TextButton(
-            onPressed: () async {aQ.addJob(() => Future.delayed(const Duration(seconds: 4), () => print("jobs2")));},
+            onPressed: () async {aQ.addJob((_) => Future.delayed(const Duration(seconds: 4), () => print("jobs2")));},
             child: const Text('job2'),
           ),
           TextButton(
-            onPressed: () async {aQ.addJob(() => Future.delayed(const Duration(seconds: 1), () => print("job3")));},
+            onPressed: () async {aQ.addJob((_) => Future.delayed(const Duration(seconds: 1), () => print("job3")));},
             child: const Text('job3'),
           ),
         ],

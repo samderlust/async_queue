@@ -1,4 +1,5 @@
-import 'job_info.dart';
+import 'dart:async';
+
 import 'typedef.dart';
 
 /// states of a job
@@ -25,35 +26,43 @@ enum JobState {
 class AsyncNode {
   final AsyncJob _job;
   final int maxRetry;
-  final String label;
+  final Object label;
   final String? description;
+  final int priority;
+  final Duration? retryDelay;
+  final Duration? timeout;
+  final Completer<dynamic> completer = Completer<dynamic>();
 
   AsyncNode? next;
   int retryCount = 0;
   JobState state = JobState.pending;
+
+  /// A future that completes when this job finishes with its result.
+  Future<dynamic> get future => completer.future;
 
   AsyncNode({
     required AsyncJob job,
     required this.label,
     this.description,
     this.maxRetry = 1,
-  }) : _job = job;
+    this.priority = 0,
+    this.retryDelay,
+    this.timeout,
+  }) : _job = job {
+    // Prevent unhandled error if the future is never awaited
+    completer.future.ignore();
+  }
 
-  Future run() async {
+  dynamic run(PreviousResult previousResult) async {
     state = JobState.running;
-    await _job();
+    if (timeout != null) {
+      return await Future(() => _job(previousResult)).timeout(timeout!);
+    }
+    return await _job(previousResult);
   }
 
   @override
   String toString() {
-    return 'AsyncNode(maxRetry: $maxRetry, label: $label, description: $description, retryCount: $retryCount)';
+    return 'AsyncNode(maxRetry: $maxRetry, label: $label, description: $description, priority: $priority, retryCount: $retryCount)';
   }
-
-  JobInfo get info => JobInfo(
-        label: label,
-        description: description,
-        maxRetry: maxRetry,
-        retryCount: retryCount,
-        state: state,
-      );
 }
